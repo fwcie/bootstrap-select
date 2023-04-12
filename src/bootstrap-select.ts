@@ -31,7 +31,7 @@ let REGEXP_ARROW = new RegExp(keyCodes.ARROW_UP + '|' + keyCodes.ARROW_DOWN);
 let REGEXP_TAB_OR_ESCAPE = new RegExp('^' + keyCodes.TAB + '$|' + keyCodes.ESCAPE);
 
 let generateOption = {
-  li(content: string | Node, classes: string, optgroup: string) {
+  li(content: string | Node | false, classes?: string, optgroup?: string) {
     const li = elementTemplates.li.cloneNode(false) as HTMLLIElement;
 
     if (content) {
@@ -64,7 +64,7 @@ let generateOption = {
     return a;
   },
 
-  text(options: { content?: string; text?: string; icon?: string }, useFragment: boolean) {
+  text(options: { content?: string; text?: string; icon?: string, subtext?: string }, useFragment: boolean) {
     let textElement = elementTemplates.text.cloneNode(false) as HTMLSpanElement,
       subtextElement,
       iconElement;
@@ -80,7 +80,7 @@ let generateOption = {
         // need to use <i> for icons in the button to prevent a breaking change
         // note: switch to span in next major release
         iconElement = (useFragment === true ? elementTemplates.i : elementTemplates.span).cloneNode(false) as HTMLElement;
-        iconElement.className = this.options.iconBase + ' ' + options.icon;
+        iconElement.className = Selectpicker.prototype.options.iconBase + ' ' + options.icon;
 
         elementTemplates.fragment.appendChild(iconElement);
         elementTemplates.fragment.appendChild(whitespace);
@@ -104,8 +104,8 @@ let generateOption = {
     return elementTemplates.fragment;
   },
 
-  label(options) {
-    let textElement = elementTemplates.text.cloneNode(false),
+  label(options: { content?: string; text?: string; icon?: string, subtext?: string, display: string }) {
+    let textElement = elementTemplates.text.cloneNode(false) as HTMLSpanElement,
       subtextElement,
       iconElement;
 
@@ -114,8 +114,8 @@ let generateOption = {
     if (options.icon) {
       let whitespace = elementTemplates.whitespace.cloneNode(false);
 
-      iconElement = elementTemplates.span.cloneNode(false);
-      iconElement.className = this.options.iconBase + ' ' + options.icon;
+      iconElement = elementTemplates.span.cloneNode(false) as HTMLSpanElement;
+      iconElement.className = Selectpicker.prototype.options.iconBase + ' ' + options.icon;
 
       elementTemplates.fragment.appendChild(iconElement);
       elementTemplates.fragment.appendChild(whitespace);
@@ -196,6 +196,9 @@ class Selectpicker {
   public options: SelectpickerOptions = DEFAULTS;
   public multiple: boolean = false;
   public autofocus: boolean = false;
+  public noScroll: boolean = false;
+  public selectId: string = '';
+  public scrollTop: number = 0;
   public selectpicker = {
     main: {
       data: [],
@@ -206,8 +209,12 @@ class Selectpicker {
       data: [],
       hasMore: false
     },
-    current: {}, // current is either equal to main or search depending on if a search is in progress
-    view: {},
+    current: {
+      data: []
+    }, // current is either equal to main or search depending on if a search is in progress
+    view: {
+      scrollTop: 0
+    },
     // map of option values and their respective data (only used in conjunction with options.source)
     optionValuesDataMap: {},
     isSearching: false,
@@ -218,7 +225,23 @@ class Selectpicker {
       }
     }
   };
-  public sizeInfo = {};
+  public sizeInfo = {
+    liHeight: 0,
+    dropdownHeaderHeight: 0,
+    headerHeight: 0,
+    searchHeight: 0,
+    actionsHeight: 0,
+    doneButtonHeight: 0,
+    dividerHeight: 0,
+    menuPadding: 0,
+    menuExtras: 0,
+    menuWidth: 0,
+    menuInnerInnerWidth: 0,
+    totalMenuWidth: 0,
+    scrollBarWidth: 0,
+    selectHeight: 0,
+    menuInnerHeight: 0
+  };
 
   constructor($element: HTMLSelectElement, options: SelectpickerOptions) {
     this.$element = $element;
@@ -577,12 +600,16 @@ class Selectpicker {
 
     scroll(scrollTop, true);
 
-    this.$menuInner.off('scroll.createView').on('scroll.createView', function (e, updateValue) {
-      if (!that.noScroll) scroll(this.scrollTop, updateValue);
+    this.$menuInner?.removeEventListener('scroll', function () {
+      if (!that.noScroll) scroll(that.scrollTop, true);
+      that.noScroll = false;
+    });
+    this.$menuInner?.addEventListener('scroll', function () {
+      if (!that.noScroll) scroll(that.scrollTop, true);
       that.noScroll = false;
     });
 
-    function scroll(scrollTop, init) {
+    function scroll(scrollTop: number = 0, init: boolean = false) {
       let size = that.selectpicker.current.data.length,
         chunks = [],
         chunkSize,
@@ -770,7 +797,7 @@ class Selectpicker {
       that.prevActiveElement = that.activeElement;
 
       if (!that.options.liveSearch) {
-        that.$menuInner.trigger('focus');
+        that.$menuInner?.focus();
       } else if (isSearching && init) {
         let index = 0,
           newActive;
@@ -789,13 +816,17 @@ class Selectpicker {
       }
     }
 
-    $(window)
-      .off('resize' + EVENT_KEY + '.' + this.selectId + '.createView')
-      .on('resize' + EVENT_KEY + '.' + this.selectId + '.createView', function () {
+    window.removeEventListener('resize' + EVENT_KEY + '.' + this.selectId + '.createView', function () {
         let isActive = that.$newElement?.classList.contains(classNames.SHOW);
 
-        if (isActive) scroll(that.$menuInner.scrollTop);
-      });
+        if (isActive) scroll(that.$menuInner?.scrollTop);
+    });
+
+    window.addEventListener('resize' + EVENT_KEY + '.' + this.selectId + '.createView', function () {
+      let isActive = that.$newElement?.classList.contains(classNames.SHOW);
+
+      if (isActive) scroll(that.$menuInner?.scrollTop);
+    });
   }
 
   focusItem(li, liData, noStyle) {
@@ -1087,7 +1118,7 @@ class Selectpicker {
       elementTemplates.a.appendChild(elementTemplates.checkMark);
     }
 
-    function buildElement(mainElements, item) {
+    function buildElement(mainElements: [], item: { type: string; optID?: string }) {
       let liElement,
         combinedLength = 0;
 
@@ -1480,7 +1511,7 @@ class Selectpicker {
 
   getSelectPosition() {
     let that = this,
-      pos = that.$newElement?.getClientRects(),
+      pos = that.$newElement?.getBoundingClientRect(),
       $container = that.options.container,
       containerPos = { top: 0, left: 0 };
 
@@ -1502,7 +1533,7 @@ class Selectpicker {
     this.sizeInfo.selectOffsetLeft -= winPad[3];
   }
 
-  setMenuSize(isAuto) {
+  setMenuSize() {
     this.getSelectPosition();
 
     let selectWidth = this.sizeInfo.selectWidth,
@@ -1601,8 +1632,7 @@ class Selectpicker {
     if (this.options.header) this.$menu.css('padding-top', 0);
 
     if (this.options.size !== false) {
-      let that = this,
-        $window = $(window);
+      const that = this;
 
       this.setMenuSize();
 
@@ -1613,13 +1643,20 @@ class Selectpicker {
       }
 
       if (this.options.size === 'auto') {
-        $window
-          .off('resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize')
-          .on('resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize', function () {
+        window.removeEventListener(
+          'resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize',
+          function () {
             return that.setMenuSize();
-          });
+          }
+        );
+        window.addEventListener(
+          'resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize',
+          function () {
+            return that.setMenuSize();
+          }
+        );
       } else if (this.options.size && this.options.size != 'auto' && this.selectpicker.current.elements.length > this.options.size) {
-        $window.off('resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize');
+        window.off('resize' + EVENT_KEY + '.' + this.selectId + '.setMenuSize' + ' scroll' + EVENT_KEY + '.' + this.selectId + '.setMenuSize');
       }
     }
 
@@ -1649,7 +1686,7 @@ class Selectpicker {
 
         // Set width to whatever's larger, button title or longest option
         that.sizeInfo.selectWidth = Math.max(that.sizeInfo.totalMenuWidth, btnWidth);
-        that.$newElement.css('width', that.sizeInfo.selectWidth + 'px');
+        that.$newElement.style.width = that.sizeInfo.selectWidth + 'px';
         // });
       });
     } else if (this.options.width === 'fit') {
@@ -1713,7 +1750,7 @@ class Selectpicker {
         that.$bsContainer.css(containerPosition);
       };
 
-    this.$button.on('click.bs.dropdown.data-api', function () {
+    this.$button?.addEventListener('click.bs.dropdown.data-api', function () {
       if (that.isDisabled()) {
         return;
       }
@@ -1942,7 +1979,7 @@ class Selectpicker {
       }
     }
 
-    this.$button.addEventListener('click.bs.dropdown.data-api', function (e) {
+    this.$button.addEventListener('click', function (e) {
       if (that.options.allowClear) {
         let target = e.target,
           clearButton = that.$clearButton;
@@ -1958,7 +1995,7 @@ class Selectpicker {
         }
       }
 
-      if (!that.$newElement.hasClass(classNames.SHOW)) {
+      if (!that.$newElement?.classList.contains(classNames.SHOW)) {
         that.setSize();
       }
     });

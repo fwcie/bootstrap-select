@@ -28,7 +28,7 @@ export const DEFAULTS = {
   placeholder: null,
   allowClear: false,
   selectedTextFormat: 'values',
-  width: 'auto',
+  width: false,
   container: false,
   hideDisabled: false,
   showSubtext: false,
