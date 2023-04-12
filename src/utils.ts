@@ -1,12 +1,4 @@
-import {
-  SAFE_URL_PATTERN,
-  DATA_URL_PATTERN,
-  uriAttrs,
-  ParseableAttributes,
-  deburredLetters
-
-
-} from "./constants";
+import { SAFE_URL_PATTERN, DATA_URL_PATTERN, uriAttrs, ParseableAttributes, deburredLetters, reLatin, reComboMark } from './constants';
 
 export function inArray(needle: any, haystack: any[]) {
   let length = haystack.length;
@@ -21,19 +13,13 @@ export function allowedAttribute(attr: Attr, allowedAttributeList: string[]) {
 
   if (inArray(attrName, allowedAttributeList)) {
     if (inArray(attrName, uriAttrs)) {
-      return Boolean(
-        attr.nodeValue?.match(SAFE_URL_PATTERN) ||
-          attr.nodeValue?.match(DATA_URL_PATTERN)
-      );
+      return Boolean(attr.nodeValue?.match(SAFE_URL_PATTERN) || attr.nodeValue?.match(DATA_URL_PATTERN));
     }
 
     return true;
   }
 
-  const regExp = allowedAttributeList.filter(function (
-    value: string | RegExp,
-    _index: number
-  ) {
+  const regExp = allowedAttributeList.filter(function (value: string | RegExp, _index: number) {
     return value instanceof RegExp;
   });
 
@@ -47,19 +33,15 @@ export function allowedAttribute(attr: Attr, allowedAttributeList: string[]) {
   return false;
 }
 
-export function sanitizeHtml(
-  unsafeElements: HTMLAllCollection,
-  whiteList: { "*": [] },
-  sanitizeFn: Function
-) {
-  if (sanitizeFn && typeof sanitizeFn === "function") {
+export function sanitizeHtml(unsafeElements: HTMLAllCollection, whiteList: { '*': [] }, sanitizeFn: Function) {
+  if (sanitizeFn && typeof sanitizeFn === 'function') {
     return sanitizeFn(unsafeElements);
   }
 
   let whitelistKeys = Object.keys(whiteList);
 
   for (let i = 0, len = unsafeElements.length; i < len; i++) {
-    let elements = unsafeElements[i].querySelectorAll("*");
+    let elements = unsafeElements[i].querySelectorAll('*');
 
     for (let j = 0, len2 = elements.length; j < len2; j++) {
       let el = elements[j];
@@ -72,10 +54,7 @@ export function sanitizeHtml(
       }
 
       let attributeList = Array.from(el.attributes);
-      let whitelistedAttributes = [].concat(
-        whiteList["*"] || [],
-        whiteList[elName as keyof {}] || []
-      );
+      let whitelistedAttributes = [].concat(whiteList['*'] || [], whiteList[elName as keyof {}] || []);
 
       for (let k = 0, len3 = attributeList.length; k < len3; k++) {
         let attr: Attr = attributeList[k];
@@ -118,12 +97,12 @@ export function isEqual(array1: [], array2: []) {
 
 export function toKebabCase(str: string) {
   return str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, function ($, ofs) {
-    return (ofs ? "-" : "") + $.toLowerCase();
+    return (ofs ? '-' : '') + $.toLowerCase();
   });
 }
 
 export function createElementFromHTML(htmlString: string) {
-  const div = document.createElement("div");
+  const div = document.createElement('div');
   div.innerHTML = htmlString.trim();
 
   // Change this to div.childNodes to support multiple top-level nodes.
@@ -131,27 +110,20 @@ export function createElementFromHTML(htmlString: string) {
 }
 
 export function deburrLetter(key: string) {
-  return deburredLetters[key keyof deburredLetters];
+  return deburredLetters[key];
 }
 
 export function normalizeToBase(string: string) {
   string = string.toString();
-  return (
-    string && string.replace(reLatin, deburrLetter).replace(reComboMark, "")
-  );
+  return string && string.replace(reLatin, deburrLetter).replace(reComboMark, '');
 }
 
 export function toInteger(value: string) {
   return parseInt(value, 10) || 0;
 }
 
-export function stringSearch(
-  li: HTMLLIElement,
-  searchString: string,
-  method: Function,
-  normalize: boolean
-) {
-  let stringTypes = ["display", "subtext", "tokens"],
+export function stringSearch(li: HTMLLIElement, searchString: string, method: Function, normalize: boolean) {
+  let stringTypes = ['display', 'subtext', 'tokens'],
     searchSuccess = false;
 
   for (const element of stringTypes) {
@@ -162,16 +134,16 @@ export function stringSearch(
       string = string.toString();
 
       // Strip HTML tags. This isn't perfect, but it's much faster than any other method
-      if (stringType === "display") {
-        string = string.replace(/<[^>]+>/g, "");
+      if (stringType === 'display') {
+        string = string.replace(/<[^>]+>/g, '');
       }
 
       if (normalize) string = normalizeToBase(string);
       string = string.toUpperCase();
 
-      if (typeof method === "function") {
+      if (typeof method === 'function') {
         searchSuccess = method(string, searchString);
-      } else if (method === "contains") {
+      } else if (method === 'contains') {
         searchSuccess = string.indexOf(searchString) >= 0;
       } else {
         searchSuccess = string.startsWith(searchString);
@@ -185,17 +157,45 @@ export function stringSearch(
 }
 
 export function createEscaper(map: Object) {
-  let escaper = function (match) {
-    return map[match];
+  let escaper = function (match: String) {
+    return map[match as keyof Object];
   };
   // Regexes for identifying a key that needs to be escaped.
-  let source = "(?:" + Object.keys(map).join("|") + ")";
+  let source = '(?:' + Object.keys(map).join('|') + ')';
   let testRegexp = RegExp(source);
-  let replaceRegexp = RegExp(source, "g");
-  return function (string) {
-    string = string == null ? "" : "" + string;
-    return testRegexp.test(string)
-      ? string.replace(replaceRegexp, escaper)
-      : string;
+  let replaceRegexp = RegExp(source, 'g');
+  return function (string: string) {
+    string = string == null ? '' : '' + string;
+    return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
   };
+}
+
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+export function isObject(item: any): boolean {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+/**
+ * Deep merge two objects.
+ */
+export function mergeDeep<T extends Object>(target: T, ...sources: T[]): T {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key as keyof T])) {
+        if (!target[key as keyof T]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key as keyof Object], source[key as keyof Object]);
+      } else {
+        Object.assign(target, { [key]: source[key as keyof T] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
 }
