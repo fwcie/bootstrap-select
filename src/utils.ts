@@ -109,20 +109,12 @@ export function createElementFromHTML(htmlString: string) {
   return div.firstChild;
 }
 
-export function deburrLetter(key: string) {
-  return deburredLetters[key];
-}
-
-export function normalizeToBase(string: string) {
-  string = string.toString();
-  return string && string.replace(reLatin, deburrLetter).replace(reComboMark, '');
-}
 
 export function toInteger(value: string) {
   return parseInt(value, 10) || 0;
 }
 
-export function stringSearch(li: HTMLLIElement, searchString: string, method: Function, normalize: boolean) {
+export function stringSearch(li: [], searchString: string, method: Function, normalize: boolean) {
   let stringTypes = ['display', 'subtext', 'tokens'],
     searchSuccess = false;
 
@@ -138,7 +130,7 @@ export function stringSearch(li: HTMLLIElement, searchString: string, method: Fu
         string = string.replace(/<[^>]+>/g, '');
       }
 
-      if (normalize) string = normalizeToBase(string);
+      // if (normalize) string = normalizeToBase(string);
       string = string.toUpperCase();
 
       if (typeof method === 'function') {
@@ -154,20 +146,6 @@ export function stringSearch(li: HTMLLIElement, searchString: string, method: Fu
   }
 
   return searchSuccess;
-}
-
-export function createEscaper(map: Object) {
-  let escaper = function (match: String) {
-    return map[match as keyof Object];
-  };
-  // Regexes for identifying a key that needs to be escaped.
-  let source = '(?:' + Object.keys(map).join('|') + ')';
-  let testRegexp = RegExp(source);
-  let replaceRegexp = RegExp(source, 'g');
-  return function (string: string) {
-    string = string == null ? '' : '' + string;
-    return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
-  };
 }
 
 /**

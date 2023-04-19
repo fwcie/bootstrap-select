@@ -1,4 +1,4 @@
-import { classNames, DefaultWhitelist } from './constants';
+import { classNames } from './constants';
 
 export const DEFAULTS = {
   noneSelectedText: 'Nothing selected',
@@ -56,5 +56,4 @@ export const DEFAULTS = {
   display: false,
   sanitize: true,
   sanitizeFn: null,
-  whiteList: DefaultWhitelist
 };
