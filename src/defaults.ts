@@ -12,14 +12,11 @@ export const DEFAULTS = {
       numGroup == 1 ? 'Group limit reached ({n} item max)' : 'Group limit reached ({n} items max)'
     ];
   },
+  local: 'en',
   selectAllText: 'Select All',
   deselectAllText: 'Deselect All',
-  source: {
-    pageSize: 40
-  },
-  chunkSize: 40,
   doneButton: false,
-  doneButtonText: 'Close',
+  // doneButtonText: 'Close',
   multipleSeparator: ', ',
   styleBase: 'btn',
   style: classNames.BUTTONCLASS,
@@ -28,32 +25,42 @@ export const DEFAULTS = {
   placeholder: null,
   allowClear: false,
   selectedTextFormat: 'values',
-  width: false,
-  container: false,
-  hideDisabled: false,
-  showSubtext: false,
-  showIcon: true,
-  showContent: true,
+  width: 'auto',
+  container: 'auto',
   dropupAuto: true,
   header: false,
-  liveSearch: false,
+  search: false,
   liveSearchPlaceholder: null,
-  liveSearchNormalize: false,
-  liveSearchStyle: 'contains',
+  normalizeSearch: false,
   actionsBox: false,
   iconBase: classNames.ICONBASE,
   tickIcon: classNames.TICKICON,
   showTick: false,
   template: {
-    caret: '<span class="caret"></span>'
+    header: () => {
+      // Use 'this' as current bootstrap-select instance
+      return `<h6 class="dropdown-header">Dropdown header</h6>`;
+    },
+    item: ($el: HTMLOptionElement) => {
+      // Use 'this' as current bootstrap-select instance
+      return `<span class="{{ class }}">{{ content }}</span>`;
+    }, // Only for select "multiple"
+    optgroup: ($el: HTMLOptGroupElement) => {
+      // Use 'this' as current bootstrap-select instance
+      return ``;
+    },
+    option: ($el: HTMLOptionElement) => {
+      // Use 'this' as current bootstrap-select instance
+      return `<a class="dropdown-item" href="#">Something else here</a>`;
+    },
+    divider: ($el: HTMLOptionElement) => {
+      // Use 'this' as current bootstrap-select instance
+      return `<hr class="dropdown-divider">`
+    }
   },
   maxOptions: false,
   mobile: false,
   selectOnTab: true,
-  dropdownAlignRight: false,
-  windowPadding: 0,
+  dropdownPosition: 'auto',
   virtualScroll: 600,
-  display: false,
-  sanitize: true,
-  sanitizeFn: null,
 };
