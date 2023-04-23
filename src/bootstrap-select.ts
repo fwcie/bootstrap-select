@@ -95,7 +95,7 @@ export class BootstrapSelect {
     if (MutationObserver) {
       const mutationObserver = new MutationObserver(this.refresh.bind(this));
 
-      mutationObserver.observe(this.$select, { childList: true, subtree: true });
+      mutationObserver.observe(this.$select, { childList: true });
     }
   }
 
@@ -203,7 +203,9 @@ export class BootstrapSelect {
     this.$select.classList.add('d-none');
   }
 
-  refresh() {}
+  refresh(mutationsList: MutationRecord[]) {
+    console.log("refresh dropdown please")
+  }
 
   hide() {
     if (!this.$btnDropdown.classList.contains('show')) return;
