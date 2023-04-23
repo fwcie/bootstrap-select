@@ -13,17 +13,17 @@ export class BootstrapSelect {
   public options: BootstrapSelectOptions = DefaultOptions;
   public optionsMap: Array<Object> = [];
   public id: string = '';
-  public values: Array<String> = [];
+  public values: Array<string> = [];
 
   constructor($element: HTMLSelectElement, options: BootstrapSelectOptions = DefaultOptions) {
     // Get data option and merge into options object
     const dataOptions = readDataAttr($element);
     options = mergeDeep<BootstrapSelectOptions>(options, dataOptions);
-    
+
     this.$select = $element;
     this.options = mergeDeep(this.options, options);
     this.id = this.$select.getAttribute('id') || 'bs-select-' + Date.now();
-    
+
     this.init();
   }
 
@@ -60,7 +60,7 @@ export class BootstrapSelect {
         const prevChild = this.$select.children[toInteger(i) - 1];
         if (child instanceof HTMLOptionElement) {
           // addOption(child);
-          const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child));
+          const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child, this.$select.multiple));
 
           if (child.selected) $opt.setAttribute('selected', 'true');
           this.$dropdownMenu.append($opt);
@@ -76,7 +76,7 @@ export class BootstrapSelect {
             for (let i in child.children) {
               const opt = child.children[i];
               if (opt instanceof HTMLOptionElement) {
-                const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt));
+                const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt, this.$select.multiple));
                 this.$dropdownMenu.append($options);
               }
             }
@@ -88,8 +88,15 @@ export class BootstrapSelect {
 
   private _initHandler() {
     this.$dropdownMenu.querySelectorAll(`.${classNames.OPTION}`).forEach(($item) => {
-      $item.addEventListener('click', this._onClickOption.bind(this))
+      $item.addEventListener('click', this._onClickOption.bind(this));
     });
+
+    // Refresh dropdown when native select input has change
+    if (MutationObserver) {
+      const mutationObserver = new MutationObserver(this.refresh.bind(this));
+
+      mutationObserver.observe(this.$select, { childList: true, subtree: true });
+    }
   }
 
   private _onClickOption(ev: Event) {
@@ -97,8 +104,58 @@ export class BootstrapSelect {
 
     if (!$opt) return;
 
+    this._manageOptionState($opt);
+    this._updateNative();
+    this._updateBtnText();
+    this._triggerNative('change');
+  }
+
+  private _triggerNative(evName: string) {
+    this.$select.dispatchEvent(new Event(evName));
+  }
+
+  private _updateNative() {
+    this.$select.value = this.values[this.values.length - 1];
+
+    for (let i = 0; i < this.$select.options.length; i++) {
+      const $opt = this.$select.options.item(i);
+
+      if ($opt) {
+        if ($opt.value && this.values.includes($opt.value)) {
+          $opt.selected = true;
+        } else {
+          $opt.selected = false;
+        }
+      }
+    }
+  }
+
+  private _removeValue(value: string) {
+    if (this.values.indexOf(value) !== -1) {
+      this.values.splice(this.values.indexOf(value), 1);
+    }
+  }
+
+  private _addValue(value: string) {
+    if (this.values.indexOf(value) === -1) {
+      this.values.push(value);
+    }
+  }
+
+  private _manageOptionState($opt: HTMLAnchorElement) {
     if (this.$select.multiple) {
-      this._toggleOptionState($opt);
+      if ($opt.getAttribute('aria-current') === 'true') {
+        $opt.removeAttribute('aria-current');
+        // $opt.classList.remove('active');
+        $opt.blur();
+        $opt.querySelector('.check-mark')?.classList.add('opacity-0');
+        this._removeValue($opt.dataset.bssValue as string);
+      } else {
+        $opt.setAttribute('aria-current', 'true');
+        // $opt.classList.add('active');
+        $opt.querySelector('.check-mark')?.classList.remove('opacity-0');
+        this._addValue($opt.dataset.bssValue as string);
+      }
     } else {
       // option already selected, do nothing
       if ($opt.classList.contains('active')) {
@@ -113,51 +170,30 @@ export class BootstrapSelect {
           this._removeValue($active.dataset.bssValue as string);
         }
 
-
         $opt.setAttribute('aria-current', 'true');
         $opt.classList.add('active');
-        this.$btnDropdown.textContent = $opt.textContent;
         this._addValue($opt.dataset.bssValue as string);
       }
     }
-
-    this._updateNative();
-    this._triggerNative('change');
   }
 
-  private _triggerNative(evName: string) {
-    this.$select.dispatchEvent(new Event(evName));
-  }
+  private _updateBtnText() {
+    const $selected = this.$select.querySelectorAll('select :checked');
 
-  private _updateNative() {
-    this.$select.value = this.values.join(',');
-  }
+    let textContent = DefaultOptions.noneSelectedText;
 
-  _removeValue(value: string) {
-    if (this.values.indexOf(value) !== -1) {
-      this.values.splice(this.values.indexOf(value), 1);
+    if ($selected.length) {
+      textContent = '';
+
+      $selected.forEach(function ($opt, i) {
+        if (i > 0) {
+          textContent += ', ';
+        }
+        textContent += $opt.firstChild?.nodeValue?.trim();
+      });
     }
+    this.$btnDropdown.textContent = textContent;
   }
-
-  _addValue(value: string) {
-    if (this.values.indexOf(value) === -1) {
-      this.values.push(value);
-    }
-  }
-
-  _toggleOptionState($opt: HTMLAnchorElement) {
-    if ($opt.classList.contains('active')) { 
-      $opt.removeAttribute('aria-current');
-      $opt.classList.remove('active');
-      $opt.blur();
-      this._removeValue($opt.dataset.bssValue as string);
-    } else {
-      $opt.setAttribute('aria-current', 'true');
-      $opt.classList.add('active');
-      this._addValue($opt.dataset.bssValue as string);
-    }
-  }
-
 
   /**
    * Render the dropdown into DOM
@@ -167,35 +203,27 @@ export class BootstrapSelect {
     this.$select.classList.add('d-none');
   }
 
-  setStyle() {}
-
-  selectAll() {}
-
-  clearSelected() {
-    
-  }
-
-  toggle(e?: Event, state: boolean = false) {
-    console.log(e, state);
-  }
-
-  open(e?: Event) {
-    this.toggle(e, true);
-  }
-
-  close(e?: Event) {
-    this.toggle(e, false);
-  }
-
-  mobile() {}
-
   refresh() {}
 
-  hide() {}
+  hide() {
+    if (!this.$btnDropdown.classList.contains('show')) return;
 
-  show() {}
+    this.$btnDropdown.dispatchEvent(new Event('click'));
+  }
 
-  destroy() {}
+  show() {
+    if (this.$btnDropdown.classList.contains('show')) return;
+
+    this.$btnDropdown.dispatchEvent(new Event('click'));
+  }
+
+  destroy() {
+    this.$btnDropdown.remove();
+    this.$dropdown.remove();
+    this.$dropdownMenu.remove();
+
+    this.$select.classList.remove('d-none');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -204,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if ($elements) {
     $elements.forEach(function ($el) {
       const BS_S = new BootstrapSelect($el);
-      $el["bs-select"] = BS_S;
-    })
+      $el['bs-select'] = BS_S;
+    });
   }
 });

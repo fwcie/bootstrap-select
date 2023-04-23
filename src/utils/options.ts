@@ -57,13 +57,20 @@ export const DefaultOptions = {
       // Use 'this' as current bootstrap-select instance
       return `<h6 class="dropdown-header">${$el.title || 'Group'}</h6>`;
     },
-    option: function($el: HTMLOptionElement) {
+    option: function($el: HTMLOptionElement, multiple: boolean = false) {
       // Use 'this' as current bootstrap-select instance
-      return `<a class="dropdown-item${$el.disabled ? ' disabled': ''}" data-bss-value="${$el.value}" href="#">${$el.textContent}</a>`;
+      return `<a class="dropdown-item${$el.disabled ? ' disabled' : ''}" data-bss-value="${$el.value}" href="#">
+      ${$el.textContent}
+      ${multiple ? `<span class="check-mark ms-2 float-end fw-bold opacity-0">&#10003;</span>` : ''}
+      </a>`;
     },
     divider: function() {
       // Use 'this' as current bootstrap-select instance
       return `<hr class="dropdown-divider">`
+    },
+    checkMark: function () {
+      // Use 'this' as current bootstrap-select instance
+      return `<span class="check-mark"></span>`;
     }
   },
   maxOptions: false,

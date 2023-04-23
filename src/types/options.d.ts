@@ -29,8 +29,9 @@ export interface BootstrapSelectOptions {
         header: () => string;
         item: ($el: HTMLOptionElement) => string;
         optgroup: ($el: HTMLOptGroupElement) => string;
-        option: ($el: HTMLOptionElement) => string;
+        option: ($el: HTMLOptionElement, multiple: boolean) => string;
         divider: () => string;
+        checkMark: () => string;
     };
     maxOptions: boolean;
     mobile: boolean;
