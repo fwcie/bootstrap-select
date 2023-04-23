@@ -8,7 +8,6 @@ export interface BootstrapSelectOptions {
     deselectAllText: string;
     doneButton: boolean;
     multipleSeparator: string;
-    styleBase: string;
     style: string;
     size: string;
     title: any;
@@ -16,14 +15,11 @@ export interface BootstrapSelectOptions {
     allowClear: boolean;
     selectedTextFormat: string;
     width: string;
-    container: string;
-    dropupAuto: boolean;
     header: boolean;
     search: boolean;
-    liveSearchPlaceholder: any;
+    searchPlaceholder: any;
     normalizeSearch: boolean;
     actionsBox: boolean;
-    iconBase: string;
     tickIcon: string;
     showTick: boolean;
     template: {

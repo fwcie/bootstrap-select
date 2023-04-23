@@ -1,18 +1,16 @@
 export const EVENT_KEY = ".bs.select";
 
 export const classNames = {
-  DISABLED: "disabled",
   DIVIDER: "dropdown-divider",
-  SHOW: "show",
-  DROPUP: "dropup",
   MENU: "dropdown-menu",
+  MENU_TOP: "dropup",
   MENURIGHT: "dropdown-menu-right",
   MENULEFT: "dropdown-menu-left",
   // to-do: replace with more advanced template/customization options
-  BUTTONCLASS: "btn-light border dropdown-toggle",
+  BUTTONCLASS: "btn btn-light border dropdown-toggle",
   POPOVERHEADER: "popover-header",
-  ICONBASE: "",
   TICKICON: "bs-ok-default",
+  OPTION: 'dropdown-item',
 };
 
 export const Selector = {

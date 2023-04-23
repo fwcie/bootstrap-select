@@ -1,13 +1,9 @@
-// Import our custom CSS
-import '../sass/bootstrap-select.scss';
-
-// Import all of Bootstrap's JS
-import * as bootstrap from 'bootstrap';
-import { addGroup, addOption, createElementFromString, mergeDeep, readDataAttr } from './utils/utils';
+import { createElementFromString, mergeDeep, readDataAttr, toInteger } from './utils/utils';
 import { DefaultOptions } from './utils/options';
 import type { BootstrapSelectOptions } from './types/options';
+import { classNames } from './utils/constants';
 
-export class BootstrapSelect extends bootstrap.Dropdown {
+export class BootstrapSelect {
   // HTML Element
   public $select: HTMLSelectElement = document.createElement('select');
   public $btnDropdown: HTMLButtonElement = document.createElement('button');
@@ -17,9 +13,9 @@ export class BootstrapSelect extends bootstrap.Dropdown {
   public options: BootstrapSelectOptions = DefaultOptions;
   public optionsMap: Array<Object> = [];
   public id: string = '';
+  public values: Array<String> = [];
 
   constructor($element: HTMLSelectElement, options: BootstrapSelectOptions = DefaultOptions) {
-    super($element);
     // Get data option and merge into options object
     const dataOptions = readDataAttr($element);
     options = mergeDeep<BootstrapSelectOptions>(options, dataOptions);
@@ -32,15 +28,19 @@ export class BootstrapSelect extends bootstrap.Dropdown {
   }
 
   init() {
-    let key: keyof typeof this.options.template;
-
     // Bind this to all template method
-    for (key in this.options.template) {
-      this.options.template[key] = this.options.template[key].bind(this)
-    }
+    this.options.template.divider = this.options.template.divider.bind(this);
+    this.options.template.dropdown = this.options.template.dropdown.bind(this);
+    this.options.template.dropdownButton = this.options.template.dropdownButton.bind(this);
+    this.options.template.dropdownMenu = this.options.template.dropdownMenu.bind(this);
+    this.options.template.header = this.options.template.header.bind(this);
+    this.options.template.item = this.options.template.item.bind(this);
+    this.options.template.optgroup = this.options.template.optgroup.bind(this);
+    this.options.template.option = this.options.template.option.bind(this);
 
     this._createDropdown();
     this.render();
+    this._initHandler();
   }
 
   /**
@@ -57,7 +57,7 @@ export class BootstrapSelect extends bootstrap.Dropdown {
     if (this.$select.children.length > 0) {
       for (let i in this.$select.children) {
         const child = this.$select.children[i];
-        const prevChild = this.$select.children[i - 1];
+        const prevChild = this.$select.children[toInteger(i) - 1];
         if (child instanceof HTMLOptionElement) {
           // addOption(child);
           const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child));
@@ -86,26 +86,97 @@ export class BootstrapSelect extends bootstrap.Dropdown {
     }
   }
 
-  isVirtual() {
-    return (typeof this.options.virtualScroll === 'number' && this.$select.options.length >= this.options.virtualScroll);
+  private _initHandler() {
+    this.$dropdownMenu.querySelectorAll(`.${classNames.OPTION}`).forEach(($item) => {
+      $item.addEventListener('click', this._onClickOption.bind(this))
+    });
   }
+
+  private _onClickOption(ev: Event) {
+    const $opt = ev.target as HTMLAnchorElement;
+
+    if (!$opt) return;
+
+    if (this.$select.multiple) {
+      this._toggleOptionState($opt);
+    } else {
+      // option already selected, do nothing
+      if ($opt.classList.contains('active')) {
+        return;
+      } else {
+        // Clear last selected item
+        const $active = this.$dropdown.querySelector('.active') as HTMLAnchorElement;
+
+        if ($active) {
+          $active.classList.remove('active');
+          $active.removeAttribute('aria-current');
+          this._removeValue($active.dataset.bssValue as string);
+        }
+
+
+        $opt.setAttribute('aria-current', 'true');
+        $opt.classList.add('active');
+        this.$btnDropdown.textContent = $opt.textContent;
+        this._addValue($opt.dataset.bssValue as string);
+      }
+    }
+
+    this._updateNative();
+    this._triggerNative('change');
+  }
+
+  private _triggerNative(evName: string) {
+    this.$select.dispatchEvent(new Event(evName));
+  }
+
+  private _updateNative() {
+    this.$select.value = this.values.join(',');
+  }
+
+  _removeValue(value: string) {
+    if (this.values.indexOf(value) !== -1) {
+      this.values.splice(this.values.indexOf(value), 1);
+    }
+  }
+
+  _addValue(value: string) {
+    if (this.values.indexOf(value) === -1) {
+      this.values.push(value);
+    }
+  }
+
+  _toggleOptionState($opt: HTMLAnchorElement) {
+    if ($opt.classList.contains('active')) { 
+      $opt.removeAttribute('aria-current');
+      $opt.classList.remove('active');
+      $opt.blur();
+      this._removeValue($opt.dataset.bssValue as string);
+    } else {
+      $opt.setAttribute('aria-current', 'true');
+      $opt.classList.add('active');
+      this._addValue($opt.dataset.bssValue as string);
+    }
+  }
+
 
   /**
    * Render the dropdown into DOM
    */
   render() {
     this.$select.after(this.$dropdown);
-    this.$select.style.display = 'none';
+    this.$select.classList.add('d-none');
   }
 
   setStyle() {}
 
   selectAll() {}
 
-  deselectAll() {}
+  clearSelected() {
+    
+  }
 
   toggle(e?: Event, state: boolean = false) {
-    console.log(state);
+    console.log(e, state);
   }
 
   open(e?: Event) {

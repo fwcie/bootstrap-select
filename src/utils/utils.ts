@@ -75,11 +75,11 @@ export function mergeDeep<T extends Object>(target: T, ...sources: T[]): T {
   return mergeDeep(target, ...sources);
 }
 
-export function addOption($opt: HTMLOptionElement) {
+export function addOption(_$opt: HTMLOptionElement) {
 
 }
 
-export function addGroup($optGroup: HTMLOptGroupElement) {
+export function addGroup(_$optGroup: HTMLOptGroupElement) {
 
 }
 
