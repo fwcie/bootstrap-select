@@ -1,3 +1,43 @@
 export interface BootstrapSelectOptions {
-    virtualScroll: boolean | number,
-}
+    noneSelectedText: string;
+    noneResultsText: string;
+    countSelectedText(numSelected: number, _numTotal: number): "{0} item selected" | "{0} items selected";
+    maxOptionsText(numAll: number, numGroup: number): string[];
+    local: string;
+    selectAllText: string;
+    deselectAllText: string;
+    doneButton: boolean;
+    multipleSeparator: string;
+    styleBase: string;
+    style: string;
+    size: string;
+    title: any;
+    placeholder: any;
+    allowClear: boolean;
+    selectedTextFormat: string;
+    width: string;
+    container: string;
+    dropupAuto: boolean;
+    header: boolean;
+    search: boolean;
+    liveSearchPlaceholder: any;
+    normalizeSearch: boolean;
+    actionsBox: boolean;
+    iconBase: string;
+    tickIcon: string;
+    showTick: boolean;
+    template: {
+        dropdownButton: () => string;
+        dropdownEl: () => string;
+        header: () => string;
+        item: ($el: HTMLOptionElement) => string;
+        optgroup: ($el: HTMLOptGroupElement) => string;
+        option: ($el: HTMLOptionElement) => string;
+        divider: ($el: HTMLOptionElement) => string;
+    };
+    maxOptions: boolean;
+    mobile: boolean;
+    selectOnTab: boolean;
+    dropdownPosition: string;
+    virtualScroll: number;
+};
