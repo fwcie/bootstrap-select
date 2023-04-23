@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "ts-declaration": "tsc --declaration src/defaults.ts --outDir src/types"
+    "ts-declaration": "tsc --declaration src/utils/defaults.ts --outDir src/types"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.6",
