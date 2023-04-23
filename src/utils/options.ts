@@ -26,7 +26,7 @@ export const DefaultOptions = {
   selectedTextFormat: 'values',
   width: 'auto',
   header: false,
-  search: false,
+  search: true,
   searchPlaceholder: null,
   normalizeSearch: false,
   actionsBox: false,
@@ -40,6 +40,14 @@ export const DefaultOptions = {
     dropdown: function() {
       // Use 'this' as current bootstrap-select instance
       return `<div class="dropdown"></div>`;
+    },
+    serchInput: function () {
+      // Use 'this' as current bootstrap-select instance
+      return `<div>
+      <span class="dropdown-item-text">
+        <input class="form-control form-control-sm bs-select-search" />
+      </span>
+      </div>`;
     },
     dropdownMenu: function() {
       // Use 'this' as current bootstrap-select instance
@@ -55,18 +63,20 @@ export const DefaultOptions = {
     }, // Only for select "multiple"
     optgroup: function($el: HTMLOptGroupElement) {
       // Use 'this' as current bootstrap-select instance
-      return `<h6 class="dropdown-header">${$el.title || 'Group'}</h6>`;
+      return `<li><h6 class="dropdown-header">${$el.title || 'Group'}</h6></li>`;
     },
     option: function($el: HTMLOptionElement, multiple: boolean = false) {
       // Use 'this' as current bootstrap-select instance
-      return `<a class="dropdown-item${$el.disabled ? ' disabled' : ''}" data-bss-value="${$el.value}" href="#">
-      ${$el.textContent}
-      ${multiple ? `<span class="check-mark ms-2 float-end fw-bold opacity-0">&#10003;</span>` : ''}
-      </a>`;
+      return `<li>
+        <a class="dropdown-item${$el.disabled ? ' disabled' : ''}" data-bss-value="${$el.value}" href="#">
+        ${$el.textContent}
+        ${multiple ? `<span class="check-mark ms-2 float-end fw-bold opacity-0">&#10003;</span>` : ''}
+        </a>
+      </li>`;
     },
     divider: function() {
       // Use 'this' as current bootstrap-select instance
-      return `<hr class="dropdown-divider">`
+      return `<li class="dropdown-divider"></li>`
     },
     checkMark: function () {
       // Use 'this' as current bootstrap-select instance

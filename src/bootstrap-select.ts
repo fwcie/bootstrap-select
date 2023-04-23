@@ -7,6 +7,7 @@ export class BootstrapSelect {
   // HTML Element
   public $select: HTMLSelectElement = document.createElement('select');
   public $btnDropdown: HTMLButtonElement = document.createElement('button');
+  public $searchInput: HTMLLIElement = document.createElement('li');
   public $dropdown: HTMLDivElement = document.createElement('div');
   public $dropdownMenu: HTMLUListElement = document.createElement('ul');
 
@@ -55,9 +56,17 @@ export class BootstrapSelect {
     this.$dropdown.appendChild(this.$dropdownMenu);
 
     if (this.$select.children.length > 0) {
+      if (this.options.search) {
+        this.$searchInput = createElementFromString<HTMLLIElement>(this.options.template.serchInput());
+        this.$dropdownMenu.append(this.$searchInput);
+      }
+      let countGroup = 1;
+      let groupClass = '';
       for (let i in this.$select.children) {
         const child = this.$select.children[i];
         const prevChild = this.$select.children[toInteger(i) - 1];
+
+
         if (child instanceof HTMLOptionElement) {
           // addOption(child);
           const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child, this.$select.multiple));
@@ -67,16 +76,21 @@ export class BootstrapSelect {
         } else if (child instanceof HTMLOptGroupElement) {
           // addGroup(child);
           if (child.children.length > 0) {
+            let groupClass = `optgroup-${countGroup++}`;
+
             if (prevChild) {
               const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
               this.$dropdownMenu.append($divider);
             }
             const $optGroup = createElementFromString<HTMLOptGroupElement>(this.options.template.optgroup(child));
+
+            $optGroup.classList.add(groupClass);
             this.$dropdownMenu.append($optGroup);
             for (let i in child.children) {
               const opt = child.children[i];
               if (opt instanceof HTMLOptionElement) {
                 const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt, this.$select.multiple));
+                $options.classList.add(groupClass);
                 this.$dropdownMenu.append($options);
               }
             }
@@ -90,6 +104,14 @@ export class BootstrapSelect {
     this.$dropdownMenu.querySelectorAll(`.${classNames.OPTION}`).forEach(($item) => {
       $item.addEventListener('click', this._onClickOption.bind(this));
     });
+
+    if (this.options.search) {
+      this.$dropdown.addEventListener('shown.bs.dropdown', () => {
+        this.$searchInput.querySelector('input')?.focus();
+      });
+
+      this.$searchInput.querySelector('input')?.addEventListener('keyup', this.search.bind(this));
+    }
 
     // Refresh dropdown when native select input has change
     if (MutationObserver) {
@@ -203,8 +225,68 @@ export class BootstrapSelect {
     this.$select.classList.add('d-none');
   }
 
-  refresh(mutationsList: MutationRecord[]) {
-    console.log("refresh dropdown please")
+  /**
+   * Refresh the dropdown list
+   * @param {MutationRecord} mutationsList
+   */
+  refresh(mutationsList?: MutationRecord[]) {
+    console.log("refresh dropdown", mutationsList);
+    if (this.$select.children.length > 0) {
+      for (let i in this.$select.children) {
+        const child = this.$select.children[i];
+        const prevChild = this.$select.children[toInteger(i) - 1];
+        if (child instanceof HTMLOptionElement) {
+          // addOption(child);
+          const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child, this.$select.multiple));
+
+          if (child.selected) $opt.setAttribute('selected', 'true');
+          this.$dropdownMenu.append($opt);
+        } else if (child instanceof HTMLOptGroupElement) {
+          // addGroup(child);
+          if (child.children.length > 0) {
+            if (prevChild) {
+              const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
+              this.$dropdownMenu.append($divider);
+            }
+            const $optGroup = createElementFromString<HTMLOptGroupElement>(this.options.template.optgroup(child));
+            this.$dropdownMenu.append($optGroup);
+            for (let i in child.children) {
+              const opt = child.children[i];
+              if (opt instanceof HTMLOptionElement) {
+                const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt, this.$select.multiple));
+                this.$dropdownMenu.append($options);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  search(event: KeyboardEvent) {
+    const $input = event.target as HTMLInputElement;
+    const filter = $input.value || '';
+    const li = this.$dropdownMenu.getElementsByTagName('li');
+  
+    // Loop through all list items, and hide those who don't match the search query
+    let nbResult = 0;
+    for (let i = 0; i < li.length; i++) {
+      let a = li[i].getElementsByTagName("a")[0];
+
+      // Not a, so it's "optgroup"
+      if (!a) continue;
+
+      let txtValue = a.firstChild?.textContent?.trim() || a.textContent?.trim() ||  a.innerText.trim();
+      if (txtValue.indexOf(filter) > -1) {
+        li[i].classList.remove('d-none');
+        nbResult++;
+      } else {
+        li[i].classList.add('d-none');
+        if (nbResult > 0) nbResult--;
+      }
+    }
+
+    console.log(nbResult);
   }
 
   hide() {

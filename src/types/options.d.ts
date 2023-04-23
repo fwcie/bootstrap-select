@@ -26,6 +26,7 @@ export interface BootstrapSelectOptions {
         dropdownButton: ($el: HTMLSelectElement) => string;
         dropdown: () => string;
         dropdownMenu: () => string;
+        serchInput: () => string;
         header: () => string;
         item: ($el: HTMLOptionElement) => string;
         optgroup: ($el: HTMLOptGroupElement) => string;
