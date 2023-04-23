@@ -1,4 +1,5 @@
 import { BootstrapSelectOptions } from '../types/options';
+import { DefaultOptions } from './options';
 import { DATA_ATTR } from './constants';
 
 export function inArray(needle: any, haystack: any[]) {
@@ -31,7 +32,7 @@ export function toCamelCase(str: string): string {
   }).replace(/\s+/g, '');
 }
 
-export function createElementFromHTML<T>(htmlString: string): T {
+export function createElementFromString<T>(htmlString: string): T {
   const div = document.createElement('div');
   div.innerHTML = htmlString.trim();
 
@@ -74,15 +75,15 @@ export function mergeDeep<T extends Object>(target: T, ...sources: T[]): T {
   return mergeDeep(target, ...sources);
 }
 
-export function addOption() {
+export function addOption($opt: HTMLOptionElement) {
 
 }
 
-export function addGroup() {
+export function addGroup($optGroup: HTMLOptGroupElement) {
 
 }
 
-export function readData($el: HTMLSelectElement): BootstrapSelectOptions {
+export function readDataAttr($el: HTMLSelectElement): BootstrapSelectOptions {
   const data = $el.dataset;
   const options: Partial<BootstrapSelectOptions> = {};
 
@@ -94,4 +95,22 @@ export function readData($el: HTMLSelectElement): BootstrapSelectOptions {
   }
 
   return options as BootstrapSelectOptions;
+}
+
+export function getTextValue($el: HTMLSelectElement): string {
+  if (!$el.options) {
+    return DefaultOptions.noneSelectedText;
+  }
+
+  const selected = $el.options[$el.selectedIndex];
+  const first = $el.options[0];
+
+  let text = '';
+  if (selected) {
+    text = selected?.textContent || DefaultOptions.noneSelectedText;
+  } else {
+    text = first.textContent || DefaultOptions.noneSelectedText;
+  }
+
+  return text;
 }

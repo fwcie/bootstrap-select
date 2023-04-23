@@ -27,13 +27,14 @@ export interface BootstrapSelectOptions {
     tickIcon: string;
     showTick: boolean;
     template: {
-        dropdownButton: () => string;
-        dropdownEl: () => string;
+        dropdownButton: ($el: HTMLSelectElement) => string;
+        dropdown: () => string;
+        dropdownMenu: () => string;
         header: () => string;
         item: ($el: HTMLOptionElement) => string;
         optgroup: ($el: HTMLOptGroupElement) => string;
         option: ($el: HTMLOptionElement) => string;
-        divider: ($el: HTMLOptionElement) => string;
+        divider: () => string;
     };
     maxOptions: boolean;
     mobile: boolean;

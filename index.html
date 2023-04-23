@@ -7,15 +7,22 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="p-3 m-0 border-0">
       <!-- This is test file instead run docs, edit this as you want -->
-      <select data-bsl data-bsl-local="fr">
-        <option>
+      <select data-bsl multiple>
+        <option value="1" disabled>
           first
         </option>
+        <option value="2">
+          second
+        </option>
+        <optgroup label="First group">
+          <option value="g1">first in group</option>
+          <option value="g2">second in group</option>
+        </optgroup>
       </select>
     </div>
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script> -->
     <script type="module" src="./src/bootstrap-select.ts"></script>
   </body>
 </html>

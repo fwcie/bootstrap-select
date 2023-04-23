@@ -1,4 +1,5 @@
 import { classNames } from './constants';
+import { getTextValue } from './utils';
 
 export const DefaultOptions = {
   noneSelectedText: 'Nothing selected',
@@ -37,31 +38,35 @@ export const DefaultOptions = {
   tickIcon: classNames.TICKICON,
   showTick: false,
   template: {
-    dropdownButton: () => {
+    dropdownButton: function($el: HTMLSelectElement) {
       // Use 'this' as current bootstrap-select instance
-      return ` <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">`;
+      return `<button${$el.disabled ? ' disabled': ''} class="btn ${classNames.BUTTONCLASS}" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="${$el.multiple ? 'outside' : 'true'}">${getTextValue($el)}</button>`;
     },
-    dropdownEl: () => {
+    dropdown: function() {
+      // Use 'this' as current bootstrap-select instance
+      return `<div class="dropdown"></div>`;
+    },
+    dropdownMenu: function() {
       // Use 'this' as current bootstrap-select instance
       return ` <ul class="dropdown-menu"></ul>`;
     },
-    header: () => {
+    header: function() {
       // Use 'this' as current bootstrap-select instance
       return `<h6 class="dropdown-header">Dropdown header</h6>`;
     },
-    item: ($el: HTMLOptionElement) => {
+    item: function($el: HTMLOptionElement) {
       // Use 'this' as current bootstrap-select instance
       return `<span class="{{ class }}">{{ content }}</span>`;
     }, // Only for select "multiple"
-    optgroup: ($el: HTMLOptGroupElement) => {
+    optgroup: function($el: HTMLOptGroupElement) {
       // Use 'this' as current bootstrap-select instance
-      return ``;
+      return `<h6 class="dropdown-header">${$el.title || 'Group'}</h6>`;
     },
-    option: ($el: HTMLOptionElement) => {
+    option: function($el: HTMLOptionElement) {
       // Use 'this' as current bootstrap-select instance
-      return `<a class="dropdown-item" href="#">Something else here</a>`;
+      return `<a class="dropdown-item${$el.disabled ? ' disabled': ''}" href="#">${$el.textContent}</a>`;
     },
-    divider: ($el: HTMLOptionElement) => {
+    divider: function() {
       // Use 'this' as current bootstrap-select instance
       return `<hr class="dropdown-divider">`
     }

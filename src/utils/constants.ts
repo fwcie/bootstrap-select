@@ -9,7 +9,7 @@ export const classNames = {
   MENURIGHT: "dropdown-menu-right",
   MENULEFT: "dropdown-menu-left",
   // to-do: replace with more advanced template/customization options
-  BUTTONCLASS: "btn-light",
+  BUTTONCLASS: "btn-light border dropdown-toggle",
   POPOVERHEADER: "popover-header",
   ICONBASE: "",
   TICKICON: "bs-ok-default",
