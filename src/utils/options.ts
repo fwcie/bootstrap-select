@@ -25,7 +25,7 @@ export const DefaultOptions = {
   allowClear: false,
   selectedTextFormat: 'values',
   width: 'auto',
-  header: false,
+  header: 'Header test',
   search: true,
   searchPlaceholder: null,
   normalizeSearch: false,
@@ -55,7 +55,12 @@ export const DefaultOptions = {
     },
     header: function() {
       // Use 'this' as current bootstrap-select instance
-      return `<h6 class="dropdown-header">Dropdown header</h6>`;
+      return `<li>
+      <h6 class="bg-light p-2 border-bottom rounded-top d-flex align-items-center justify-content-between">
+      Dropdown header
+      <button role="button" aria-label="close" type="button" class="btn-close float-end"></button>
+      </h6>
+      </li>`;
     },
     item: function($el: HTMLOptionElement) {
       // Use 'this' as current bootstrap-select instance

@@ -7,6 +7,7 @@ export class BootstrapSelect {
   // HTML Element
   public $select: HTMLSelectElement = document.createElement('select');
   public $btnDropdown: HTMLButtonElement = document.createElement('button');
+  public $header: HTMLLIElement = document.createElement('li');
   public $searchInput: HTMLLIElement = document.createElement('li');
   public $dropdown: HTMLDivElement = document.createElement('div');
   public $dropdownMenu: HTMLUListElement = document.createElement('ul');
@@ -56,12 +57,18 @@ export class BootstrapSelect {
     this.$dropdown.appendChild(this.$dropdownMenu);
 
     if (this.$select.children.length > 0) {
+      if (this.options.header) {
+        this.$header = createElementFromString<HTMLLIElement>(this.options.template.header());
+        this.$dropdownMenu.classList.add('pt-0');
+        this.$dropdownMenu.append(this.$header);
+      }
+
       if (this.options.search) {
         this.$searchInput = createElementFromString<HTMLLIElement>(this.options.template.serchInput());
         this.$dropdownMenu.append(this.$searchInput);
       }
       let countGroup = 1;
-      let groupClass = '';
+
       for (let i in this.$select.children) {
         const child = this.$select.children[i];
         const prevChild = this.$select.children[toInteger(i) - 1];
@@ -76,7 +83,7 @@ export class BootstrapSelect {
         } else if (child instanceof HTMLOptGroupElement) {
           // addGroup(child);
           if (child.children.length > 0) {
-            let groupClass = `optgroup-${countGroup++}`;
+            const groupClass = `optgroup-${countGroup}`;
 
             if (prevChild) {
               const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
@@ -94,6 +101,7 @@ export class BootstrapSelect {
                 this.$dropdownMenu.append($options);
               }
             }
+            countGroup++;
           }
         }
       }
@@ -118,6 +126,10 @@ export class BootstrapSelect {
       const mutationObserver = new MutationObserver(this.refresh.bind(this));
 
       mutationObserver.observe(this.$select, { childList: true });
+    }
+
+    if (this.options.header) {
+      this.$header.querySelector('.btn-close')?.addEventListener('click', this.close.bind(this));
     }
   }
 
@@ -289,13 +301,13 @@ export class BootstrapSelect {
     console.log(nbResult);
   }
 
-  hide() {
+  close() {
     if (!this.$btnDropdown.classList.contains('show')) return;
 
     this.$btnDropdown.dispatchEvent(new Event('click'));
   }
 
-  show() {
+  open() {
     if (this.$btnDropdown.classList.contains('show')) return;
 
     this.$btnDropdown.dispatchEvent(new Event('click'));

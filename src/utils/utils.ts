@@ -109,7 +109,11 @@ export function getTextValue($el: HTMLSelectElement): string {
   if (selected) {
     text = selected?.textContent || DefaultOptions.noneSelectedText;
   } else {
-    text = first.textContent || DefaultOptions.noneSelectedText;
+    if ($el.multiple) {
+      text = DefaultOptions.noneSelectedText;
+    } else {
+      text = first.textContent || DefaultOptions.noneSelectedText;
+    }
   }
 
   return text;

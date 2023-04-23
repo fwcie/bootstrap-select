@@ -15,7 +15,7 @@ export interface BootstrapSelectOptions {
     allowClear: boolean;
     selectedTextFormat: string;
     width: string;
-    header: boolean;
+    header: boolean | string;
     search: boolean;
     searchPlaceholder: any;
     normalizeSearch: boolean;
