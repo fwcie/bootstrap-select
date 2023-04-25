@@ -22,14 +22,14 @@ export const DefaultOptions: BootstrapSelectOptions = {
     multipleSeparator: ", ",
     style: classNames.BUTTONCLASS,
     size: "auto",
-    title: '',
-    placeholder: '',
+    title: "",
+    placeholder: "",
     allowClear: false,
     selectedTextFormat: "values",
     width: "auto",
     header: "Header test",
     search: true,
-    searchPlaceholder: '',
+    searchPlaceholder: "",
     normalizeSearch: false,
     actionsBox: false,
     showTick: false,
@@ -46,22 +46,26 @@ export const DefaultOptions: BootstrapSelectOptions = {
         },
         serchInput: function () {
             // Use 'this' as current bootstrap-select instance
-            return `<div class="px-2">
-        <input class="form-control form-control-sm bs-select-search" />
-      </div>`;
+            return `
+            <div class="px-2">
+                <input class="form-control form-control-sm bs-select-search" />
+            </div>`;
         },
         dropdownMenu: function () {
             // Use 'this' as current bootstrap-select instance
-            return `<ul class="dropdown-menu"></ul>`;
+            return `<ul class="dropdown-menu overflow-auto"></ul>`;
+        },
+        stickyTop: function () {
+            return `<div class="bg-body sticky-top pb-2 shadow"></div>`;
         },
         header: function () {
             // Use 'this' as current bootstrap-select instance
-            return `<li>
-      <h6 class="bg-light p-2 border-bottom rounded-top d-flex align-items-center justify-content-between">
-      Dropdown header
-      <button role="button" aria-label="close" type="button" class="btn-close float-end"></button>
-      </h6>
-      </li>`;
+            return `
+            <h6 class="bg-light p-2 border-bottom rounded-top d-flex align-items-center justify-content-between">
+                Dropdown header
+                <button role="button" aria-label="close" type="button" class="btn-close float-end">
+                </button>
+            </h6>`;
         },
         item: function ($el: HTMLOptionElement) {
             // Use 'this' as current bootstrap-select instance

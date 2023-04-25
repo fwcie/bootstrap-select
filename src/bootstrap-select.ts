@@ -52,7 +52,7 @@ export class BootstrapSelect {
         this.$dropdown = createElementFromString<HTMLDivElement>(this.options.template.dropdown());
         this.$btnDropdown = createElementFromString<HTMLButtonElement>(this.options.template.dropdownButton(this.$select));
         this.$dropdownMenu = createElementFromString<HTMLUListElement>(this.options.template.dropdownMenu());
-
+        
         const textContent = getTextContent(this.$select, this);
         if (textContent === DefaultOptions.noneSelectedText) {
             addClass("text-muted", this.$btnDropdown);
@@ -63,16 +63,21 @@ export class BootstrapSelect {
         this.$dropdown.appendChild(this.$dropdownMenu);
 
         if (this.$select.children.length > 0) {
+            const stickyTop = createElementFromString<HTMLDivElement>(this.options.template.stickyTop());
+
             if (this.options.header) {
                 this.$header = createElementFromString<HTMLLIElement>(this.options.template.header());
                 this.$dropdownMenu.classList.add("pt-0");
-                this.$dropdownMenu.append(this.$header);
+                stickyTop.append(this.$header);
             }
 
             if (this.options.search) {
                 this.$searchInput = createElementFromString<HTMLLIElement>(this.options.template.serchInput());
-                this.$dropdownMenu.append(this.$searchInput);
+                stickyTop.append(this.$searchInput);
             }
+
+            this.$dropdownMenu.append(stickyTop);
+            
             let countGroup = 1;
 
             for (const i in this.$select.children) {
@@ -271,11 +276,17 @@ export class BootstrapSelect {
         this.$btnDropdown.innerHTML = content;
     }
 
+    private _setupStyle() {
+        const { bottom } = this.$dropdown.getBoundingClientRect();
+        this.$dropdownMenu.style.maxHeight = window.innerHeight - bottom + "px";
+    }
+
     /**
      * Render the dropdown into DOM
      */
     render() {
         this.$select.after(this.$dropdown);
+        this._setupStyle();
         this.$select.classList.add("d-none");
     }
 
@@ -335,6 +346,17 @@ export class BootstrapSelect {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    const $zl = document.createElement("select");
+    $zl.dataset.bss = "true";
+
+    for (let i = 0; i < 200; i++) {
+        const $opt = document.createElement("option");
+        $opt.value = i.toString();
+        $opt.textContent = "Valeur : " + i.toString();
+        $zl.appendChild($opt);
+    }
+
+    this.body.appendChild($zl);
     const $elements = document.querySelectorAll("[data-bss]") as NodeListOf<HTMLSelectElement>;
 
     if ($elements) {
