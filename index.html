@@ -5,23 +5,35 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist//css/bootstrap.min.css">
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist//css/bootstrap.min.css" />
   </head>
   <body>
     <div id="app" class="p-3 m-0 border-0">
       <!-- This is test file instead run docs, edit this as you want -->
-      <select data-bsl multiple>
-        <option value="1" disabled>
-          first
-        </option>
-        <option value="2">
-          second
-        </option>
-        <optgroup label="First group">
-          <option value="g1">first in group</option>
-          <option value="g2">second in group</option>
-        </optgroup>
-      </select>
+      <div class="container">
+        <div class="row">
+          <div class="col-4">
+            <select data-bss multiple>
+              <option value="1" disabled>first</option>
+              <option value="2" selected>second</option>
+              <optgroup label="First group">
+                <option value="g1" selected>first in group</option>
+                <option value="g2">second in group</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="col-4">
+            <select data-bss>
+              <option value="1">first</option>
+              <option value="2">second</option>
+              <optgroup label="First group">
+                <option value="g1">first in group</option>
+                <option value="g2">second in group</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script type="module" src="./src/bootstrap-select.ts"></script>

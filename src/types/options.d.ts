@@ -1,7 +1,8 @@
 export interface BootstrapSelectOptions {
     noneSelectedText: string;
     noneResultsText: string;
-    countSelectedText(numSelected: number, _numTotal: number): "{0} item selected" | "{0} items selected";
+    noneValue: string;
+    countSelectedText(numSelected: number, _numTotal: number): "1 item selected" | `${number} items selected`;
     maxOptionsText(numAll: number, numGroup: number): string[];
     local: string;
     selectAllText: string;
@@ -10,17 +11,16 @@ export interface BootstrapSelectOptions {
     multipleSeparator: string;
     style: string;
     size: string;
-    title: any;
-    placeholder: any;
+    title: string;
+    placeholder: string;
     allowClear: boolean;
     selectedTextFormat: string;
     width: string;
     header: boolean | string;
     search: boolean;
-    searchPlaceholder: any;
+    searchPlaceholder: string;
     normalizeSearch: boolean;
     actionsBox: boolean;
-    tickIcon: string;
     showTick: boolean;
     template: {
         dropdownButton: ($el: HTMLSelectElement) => string;
@@ -39,4 +39,4 @@ export interface BootstrapSelectOptions {
     selectOnTab: boolean;
     dropdownPosition: string;
     virtualScroll: number;
-};
+}

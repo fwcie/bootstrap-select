@@ -1,334 +1,346 @@
-import { createElementFromString, mergeDeep, readDataAttr, toInteger } from './utils/utils';
-import { DefaultOptions } from './utils/options';
-import type { BootstrapSelectOptions } from './types/options';
-import { classNames } from './utils/constants';
+import { addClass, createElementFromString, mergeDeep, readDataAttr, removeClass, toInteger, getTextContent } from "./utils/utils";
+import { DefaultOptions } from "./utils/options";
+import type { BootstrapSelectOptions } from "./types/options";
+import { DATA_ATTR, classNames } from "./utils/constants";
 
 export class BootstrapSelect {
-  // HTML Element
-  public $select: HTMLSelectElement = document.createElement('select');
-  public $btnDropdown: HTMLButtonElement = document.createElement('button');
-  public $header: HTMLLIElement = document.createElement('li');
-  public $searchInput: HTMLLIElement = document.createElement('li');
-  public $dropdown: HTMLDivElement = document.createElement('div');
-  public $dropdownMenu: HTMLUListElement = document.createElement('ul');
+    // HTML Element
+    public $select: HTMLSelectElement = document.createElement("select");
+    public $btnDropdown: HTMLButtonElement = document.createElement("button");
+    public $header: HTMLLIElement = document.createElement("li");
+    public $searchInput: HTMLLIElement = document.createElement("li");
+    public $dropdown: HTMLDivElement = document.createElement("div");
+    public $dropdownMenu: HTMLUListElement = document.createElement("ul");
 
-  public options: BootstrapSelectOptions = DefaultOptions;
-  public optionsMap: Array<Object> = [];
-  public id: string = '';
-  public values: Array<string> = [];
+    public options: BootstrapSelectOptions = DefaultOptions;
+    public optionsMap: Array<object> = [];
+    public id = "";
+    public values: Array<string> = [];
 
-  constructor($element: HTMLSelectElement, options: BootstrapSelectOptions = DefaultOptions) {
-    // Get data option and merge into options object
-    const dataOptions = readDataAttr($element);
-    options = mergeDeep<BootstrapSelectOptions>(options, dataOptions);
+    constructor($element: HTMLSelectElement, options: BootstrapSelectOptions = DefaultOptions) {
+        // Get data option and merge into options object
+        const dataOptions = readDataAttr($element);
+        options = mergeDeep<BootstrapSelectOptions>(options, dataOptions);
 
-    this.$select = $element;
-    this.options = mergeDeep(this.options, options);
-    this.id = this.$select.getAttribute('id') || 'bs-select-' + Date.now();
+        this.$select = $element;
+        this.options = mergeDeep(this.options, options);
+        this.id = this.$select.getAttribute("id") || "bs-select-" + Date.now();
 
-    this.init();
-  }
+        this.init();
+    }
 
-  init() {
-    // Bind this to all template method
-    this.options.template.divider = this.options.template.divider.bind(this);
-    this.options.template.dropdown = this.options.template.dropdown.bind(this);
-    this.options.template.dropdownButton = this.options.template.dropdownButton.bind(this);
-    this.options.template.dropdownMenu = this.options.template.dropdownMenu.bind(this);
-    this.options.template.header = this.options.template.header.bind(this);
-    this.options.template.item = this.options.template.item.bind(this);
-    this.options.template.optgroup = this.options.template.optgroup.bind(this);
-    this.options.template.option = this.options.template.option.bind(this);
+    init() {
+        // Bind this to all template method
+        this.options.template.divider = this.options.template.divider.bind(this);
+        this.options.template.dropdown = this.options.template.dropdown.bind(this);
+        this.options.template.dropdownButton = this.options.template.dropdownButton.bind(this);
+        this.options.template.dropdownMenu = this.options.template.dropdownMenu.bind(this);
+        this.options.template.header = this.options.template.header.bind(this);
+        this.options.template.item = this.options.template.item.bind(this);
+        this.options.template.optgroup = this.options.template.optgroup.bind(this);
+        this.options.template.option = this.options.template.option.bind(this);
 
-    this._createDropdown();
-    this.render();
-    this._initHandler();
-  }
+        this._createDropdown();
+        this.render();
+        this._initHandler();
+    }
 
-  /**
-   * Create html dropdown
-   */
-  private _createDropdown() {
-    this.$dropdown = createElementFromString<HTMLDivElement>(this.options.template.dropdown());
-    this.$btnDropdown = createElementFromString<HTMLButtonElement>(this.options.template.dropdownButton(this.$select));
-    this.$dropdownMenu = createElementFromString<HTMLUListElement>(this.options.template.dropdownMenu());
+    /**
+     * Create html dropdown
+     */
+    private _createDropdown() {
+        this.$dropdown = createElementFromString<HTMLDivElement>(this.options.template.dropdown());
+        this.$btnDropdown = createElementFromString<HTMLButtonElement>(this.options.template.dropdownButton(this.$select));
+        this.$dropdownMenu = createElementFromString<HTMLUListElement>(this.options.template.dropdownMenu());
 
-    this.$dropdown.appendChild(this.$btnDropdown);
-    this.$dropdown.appendChild(this.$dropdownMenu);
-
-    if (this.$select.children.length > 0) {
-      if (this.options.header) {
-        this.$header = createElementFromString<HTMLLIElement>(this.options.template.header());
-        this.$dropdownMenu.classList.add('pt-0');
-        this.$dropdownMenu.append(this.$header);
-      }
-
-      if (this.options.search) {
-        this.$searchInput = createElementFromString<HTMLLIElement>(this.options.template.serchInput());
-        this.$dropdownMenu.append(this.$searchInput);
-      }
-      let countGroup = 1;
-
-      for (let i in this.$select.children) {
-        const child = this.$select.children[i];
-        const prevChild = this.$select.children[toInteger(i) - 1];
-
-
-        if (child instanceof HTMLOptionElement) {
-          // addOption(child);
-          const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child, this.$select.multiple));
-
-          if (child.selected) $opt.setAttribute('selected', 'true');
-          this.$dropdownMenu.append($opt);
-        } else if (child instanceof HTMLOptGroupElement) {
-          // addGroup(child);
-          if (child.children.length > 0) {
-            const groupClass = `optgroup-${countGroup}`;
-
-            if (prevChild) {
-              const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
-              this.$dropdownMenu.append($divider);
-            }
-            const $optGroup = createElementFromString<HTMLOptGroupElement>(this.options.template.optgroup(child));
-
-            $optGroup.classList.add(groupClass);
-            this.$dropdownMenu.append($optGroup);
-            for (let i in child.children) {
-              const opt = child.children[i];
-              if (opt instanceof HTMLOptionElement) {
-                const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt, this.$select.multiple));
-                $options.classList.add(groupClass);
-                this.$dropdownMenu.append($options);
-              }
-            }
-            countGroup++;
-          }
+        const textContent = getTextContent(this.$select, this);
+        if (textContent === DefaultOptions.noneSelectedText) {
+            addClass("text-muted", this.$btnDropdown);
         }
-      }
+
+        this.$btnDropdown.innerHTML = textContent;
+        this.$dropdown.appendChild(this.$btnDropdown);
+        this.$dropdown.appendChild(this.$dropdownMenu);
+
+        if (this.$select.children.length > 0) {
+            if (this.options.header) {
+                this.$header = createElementFromString<HTMLLIElement>(this.options.template.header());
+                this.$dropdownMenu.classList.add("pt-0");
+                this.$dropdownMenu.append(this.$header);
+            }
+
+            if (this.options.search) {
+                this.$searchInput = createElementFromString<HTMLLIElement>(this.options.template.serchInput());
+                this.$dropdownMenu.append(this.$searchInput);
+            }
+            let countGroup = 1;
+
+            for (const i in this.$select.children) {
+                const child = this.$select.children[i];
+                const prevChild = this.$select.children[toInteger(i) - 1];
+
+                if (child instanceof HTMLOptionElement) {
+                    // addOption(child);
+                    const $opt = createElementFromString<HTMLLIElement>(this.options.template.option(child, this.$select.multiple));
+
+                    if (child.selected) this._setSelected($opt.querySelector("a") as HTMLAnchorElement);
+                    if (child.selected) $opt.setAttribute("selected", "true");
+                    this.$dropdownMenu.append($opt);
+                } else if (child instanceof HTMLOptGroupElement) {
+                    // addGroup(child);
+                    if (child.children.length > 0) {
+                        const groupClass = `optgroup-${countGroup}`;
+
+                        if (prevChild) {
+                            const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
+                            this.$dropdownMenu.append($divider);
+                        }
+                        const $optGroup = createElementFromString<HTMLOptGroupElement>(this.options.template.optgroup(child));
+
+                        $optGroup.classList.add(groupClass);
+                        this.$dropdownMenu.append($optGroup);
+                        for (const i in child.children) {
+                            const opt = child.children[i];
+                            if (opt instanceof HTMLOptionElement) {
+                                const $opt = createElementFromString<HTMLLIElement>(this.options.template.option(opt, this.$select.multiple));
+                                if (opt.selected) this._setSelected($opt.querySelector("a") as HTMLAnchorElement);
+                                $opt.classList.add(groupClass);
+                                this.$dropdownMenu.append($opt);
+                            }
+                        }
+                        countGroup++;
+                    }
+                }
+            }
+        }
     }
-  }
 
-  private _initHandler() {
-    this.$dropdownMenu.querySelectorAll(`.${classNames.OPTION}`).forEach(($item) => {
-      $item.addEventListener('click', this._onClickOption.bind(this));
-    });
+    private _initHandler() {
+        this.$dropdownMenu.querySelectorAll(`.${classNames.OPTION}`).forEach($item => {
+            $item.addEventListener("click", this._onClickOption.bind(this));
+        });
 
-    if (this.options.search) {
-      this.$dropdown.addEventListener('shown.bs.dropdown', () => {
-        this.$searchInput.querySelector('input')?.focus();
-      });
+        if (this.options.search) {
+            this.$dropdown.addEventListener("shown.bs.dropdown", () => {
+                this.$searchInput.querySelector("input")?.focus();
+            });
 
-      this.$searchInput.querySelector('input')?.addEventListener('keyup', this.search.bind(this));
+            this.$searchInput.querySelector("input")?.addEventListener("keyup", this.search.bind(this));
+        }
+
+        this._initHandleeDoneBtn();
+
+        // Refresh dropdown when native select input has change
+        if (MutationObserver) {
+            const mutationObserver = new MutationObserver(this.refresh.bind(this));
+
+            mutationObserver.observe(this.$select, { childList: true });
+        }
+
+        if (this.options.header) {
+            this.$header.querySelector(".btn-close")?.addEventListener("click", this.close.bind(this));
+        }
     }
 
-    // Refresh dropdown when native select input has change
-    if (MutationObserver) {
-      const mutationObserver = new MutationObserver(this.refresh.bind(this));
+    private _initHandleeDoneBtn() {
+        if (this.options.doneButton) {
+            const $doneButtons = this.$dropdown.querySelectorAll(`.${classNames.DONE_BUTTON}`);
 
-      mutationObserver.observe(this.$select, { childList: true });
+            if ($doneButtons) {
+                $doneButtons.forEach($item => {
+                    $item.addEventListener("click", e => {
+                        // need to force close cause show called before click
+                        this.close();
+
+                        const $el = e.target ? (e.target as HTMLSpanElement) : (e.currentTarget as HTMLSpanElement);
+
+                        if ($el) {
+                            const value = $el.parentElement ? $el.parentElement.dataset.bssValue : "";
+                            const $opt = this.$dropdown.querySelector(`a[${DATA_ATTR}-value="${value}"]`) as HTMLAnchorElement;
+                            this._unsetSelected($opt, this.$select.multiple);
+                            this._changed();
+                        }
+                    });
+                });
+            }
+        }
     }
 
-    if (this.options.header) {
-      this.$header.querySelector('.btn-close')?.addEventListener('click', this.close.bind(this));
+    private _onClickOption(ev: Event) {
+        const $opt = ev.target as HTMLAnchorElement;
+
+        if (!$opt) return;
+
+        this._manageOptionState($opt);
+        this._changed();
     }
-  }
 
-  private _onClickOption(ev: Event) {
-    const $opt = ev.target as HTMLAnchorElement;
+    private _changed() {
+        this._updateNative();
+        this._updateBtnText();
+        this._initHandleeDoneBtn();
+        this._triggerNative("change");
+    }
 
-    if (!$opt) return;
+    private _triggerNative(evName: string) {
+        this.$select.dispatchEvent(new Event(evName));
+    }
 
-    this._manageOptionState($opt);
-    this._updateNative();
-    this._updateBtnText();
-    this._triggerNative('change');
-  }
+    private _updateNative() {
+        this.$select.value = this.values[this.values.length - 1];
 
-  private _triggerNative(evName: string) {
-    this.$select.dispatchEvent(new Event(evName));
-  }
+        for (let i = 0; i < this.$select.options.length; i++) {
+            const $opt = this.$select.options.item(i);
 
-  private _updateNative() {
-    this.$select.value = this.values[this.values.length - 1];
+            if ($opt) {
+                if ($opt.value && this.values.includes($opt.value)) {
+                    $opt.selected = true;
+                } else {
+                    $opt.selected = false;
+                }
+            }
+        }
+    }
 
-    for (let i = 0; i < this.$select.options.length; i++) {
-      const $opt = this.$select.options.item(i);
+    private _removeValue(value: string) {
+        if (this.values.indexOf(value) !== -1) {
+            this.values.splice(this.values.indexOf(value), 1);
+        }
+    }
 
-      if ($opt) {
-        if ($opt.value && this.values.includes($opt.value)) {
-          $opt.selected = true;
+    private _addValue(value: string) {
+        if (this.values.indexOf(value) === -1) {
+            this.values.push(value);
+        }
+    }
+
+    private _manageOptionState($opt: HTMLAnchorElement) {
+        if (this.$select.multiple) {
+            if ($opt.getAttribute("aria-current") === "true") {
+                this._unsetSelected($opt);
+            } else {
+                this._setSelected($opt);
+            }
         } else {
-          $opt.selected = false;
+            // option already selected, do nothing
+            if ($opt.classList.contains("active")) {
+                return;
+            } else {
+                // Clear last selected item
+                const $active = this.$dropdown.querySelector(".active") as HTMLAnchorElement;
+
+                if ($active) {
+                    $active.classList.remove("active");
+                    $active.removeAttribute("aria-current");
+                    this._removeValue($active.dataset.bssValue as string);
+                }
+
+                this._setSelected($opt, true);
+            }
         }
-      }
     }
-  }
 
-  private _removeValue(value: string) {
-    if (this.values.indexOf(value) !== -1) {
-      this.values.splice(this.values.indexOf(value), 1);
+    private _setSelected($opt: HTMLAnchorElement, single = false) {
+        $opt.setAttribute("aria-current", "true");
+        // $opt.classList.add('active');
+        $opt.querySelector(".check-mark")?.classList.remove("opacity-0");
+        this._addValue($opt.dataset.bssValue as string);
+
+        if (single) $opt.classList.add("active");
     }
-  }
 
-  private _addValue(value: string) {
-    if (this.values.indexOf(value) === -1) {
-      this.values.push(value);
-    }
-  }
-
-  private _manageOptionState($opt: HTMLAnchorElement) {
-    if (this.$select.multiple) {
-      if ($opt.getAttribute('aria-current') === 'true') {
-        $opt.removeAttribute('aria-current');
+    private _unsetSelected($opt: HTMLAnchorElement, single = false) {
+        $opt.removeAttribute("aria-current");
         // $opt.classList.remove('active');
         $opt.blur();
-        $opt.querySelector('.check-mark')?.classList.add('opacity-0');
+        $opt.querySelector(".check-mark")?.classList.add("opacity-0");
         this._removeValue($opt.dataset.bssValue as string);
-      } else {
-        $opt.setAttribute('aria-current', 'true');
-        // $opt.classList.add('active');
-        $opt.querySelector('.check-mark')?.classList.remove('opacity-0');
-        this._addValue($opt.dataset.bssValue as string);
-      }
-    } else {
-      // option already selected, do nothing
-      if ($opt.classList.contains('active')) {
-        return;
-      } else {
-        // Clear last selected item
-        const $active = this.$dropdown.querySelector('.active') as HTMLAnchorElement;
 
-        if ($active) {
-          $active.classList.remove('active');
-          $active.removeAttribute('aria-current');
-          this._removeValue($active.dataset.bssValue as string);
+        if (single) $opt.classList.remove("active");
+    }
+
+    private _updateBtnText() {
+        const content = getTextContent(this.$select, this);
+
+        if (content === DefaultOptions.noneSelectedText) {
+            addClass("text-muted", this.$btnDropdown);
+        } else {
+            removeClass("text-muted", this.$btnDropdown);
         }
 
-        $opt.setAttribute('aria-current', 'true');
-        $opt.classList.add('active');
-        this._addValue($opt.dataset.bssValue as string);
-      }
+        this.$btnDropdown.innerHTML = content;
     }
-  }
 
-  private _updateBtnText() {
-    const $selected = this.$select.querySelectorAll('select :checked');
-
-    let textContent = DefaultOptions.noneSelectedText;
-
-    if ($selected.length) {
-      textContent = '';
-
-      $selected.forEach(function ($opt, i) {
-        if (i > 0) {
-          textContent += ', ';
-        }
-        textContent += $opt.firstChild?.nodeValue?.trim();
-      });
+    /**
+     * Render the dropdown into DOM
+     */
+    render() {
+        this.$select.after(this.$dropdown);
+        this.$select.classList.add("d-none");
     }
-    this.$btnDropdown.textContent = textContent;
-  }
 
-  /**
-   * Render the dropdown into DOM
-   */
-  render() {
-    this.$select.after(this.$dropdown);
-    this.$select.classList.add('d-none');
-  }
+    /**
+     * Refresh the dropdown list
+     * @param {MutationRecord} mutationsList
+     */
+    refresh(mutationsList?: MutationRecord[]) {
+        console.log("refresh dropdown", mutationsList);
+    }
 
-  /**
-   * Refresh the dropdown list
-   * @param {MutationRecord} mutationsList
-   */
-  refresh(mutationsList?: MutationRecord[]) {
-    console.log("refresh dropdown", mutationsList);
-    if (this.$select.children.length > 0) {
-      for (let i in this.$select.children) {
-        const child = this.$select.children[i];
-        const prevChild = this.$select.children[toInteger(i) - 1];
-        if (child instanceof HTMLOptionElement) {
-          // addOption(child);
-          const $opt = createElementFromString<HTMLOptionElement>(this.options.template.option(child, this.$select.multiple));
+    search(event: KeyboardEvent) {
+        const $input = event.target as HTMLInputElement;
+        const filter = $input.value || "";
+        const li = this.$dropdownMenu.getElementsByTagName("li");
 
-          if (child.selected) $opt.setAttribute('selected', 'true');
-          this.$dropdownMenu.append($opt);
-        } else if (child instanceof HTMLOptGroupElement) {
-          // addGroup(child);
-          if (child.children.length > 0) {
-            if (prevChild) {
-              const $divider = createElementFromString<HTMLHRElement>(this.options.template.divider());
-              this.$dropdownMenu.append($divider);
+        // Loop through all list items, and hide those who don't match the search query
+        let nbResult = 0;
+        for (let i = 0; i < li.length; i++) {
+            const a = li[i].getElementsByTagName("a")[0];
+
+            // Not a, so it's "optgroup"
+            if (!a) continue;
+
+            const txtValue = a.firstChild?.textContent?.trim() || a.textContent?.trim() || a.innerText.trim();
+            if (txtValue.indexOf(filter) > -1) {
+                li[i].classList.remove("d-none");
+                nbResult++;
+            } else {
+                li[i].classList.add("d-none");
+                if (nbResult > 0) nbResult--;
             }
-            const $optGroup = createElementFromString<HTMLOptGroupElement>(this.options.template.optgroup(child));
-            this.$dropdownMenu.append($optGroup);
-            for (let i in child.children) {
-              const opt = child.children[i];
-              if (opt instanceof HTMLOptionElement) {
-                const $options = createElementFromString<HTMLOptionElement>(this.options.template.option(opt, this.$select.multiple));
-                this.$dropdownMenu.append($options);
-              }
-            }
-          }
         }
-      }
-    }
-  }
 
-  search(event: KeyboardEvent) {
-    const $input = event.target as HTMLInputElement;
-    const filter = $input.value || '';
-    const li = this.$dropdownMenu.getElementsByTagName('li');
-  
-    // Loop through all list items, and hide those who don't match the search query
-    let nbResult = 0;
-    for (let i = 0; i < li.length; i++) {
-      let a = li[i].getElementsByTagName("a")[0];
-
-      // Not a, so it's "optgroup"
-      if (!a) continue;
-
-      let txtValue = a.firstChild?.textContent?.trim() || a.textContent?.trim() ||  a.innerText.trim();
-      if (txtValue.indexOf(filter) > -1) {
-        li[i].classList.remove('d-none');
-        nbResult++;
-      } else {
-        li[i].classList.add('d-none');
-        if (nbResult > 0) nbResult--;
-      }
+        console.log(nbResult);
     }
 
-    console.log(nbResult);
-  }
+    close() {
+        if (!this.$btnDropdown.classList.contains("show")) return;
 
-  close() {
-    if (!this.$btnDropdown.classList.contains('show')) return;
+        this.$btnDropdown.dispatchEvent(new Event("click"));
+    }
 
-    this.$btnDropdown.dispatchEvent(new Event('click'));
-  }
+    open() {
+        if (this.$btnDropdown.classList.contains("show")) return;
 
-  open() {
-    if (this.$btnDropdown.classList.contains('show')) return;
+        this.$btnDropdown.dispatchEvent(new Event("click"));
+    }
 
-    this.$btnDropdown.dispatchEvent(new Event('click'));
-  }
+    destroy() {
+        this.$btnDropdown.remove();
+        this.$dropdown.remove();
+        this.$dropdownMenu.remove();
 
-  destroy() {
-    this.$btnDropdown.remove();
-    this.$dropdown.remove();
-    this.$dropdownMenu.remove();
-
-    this.$select.classList.remove('d-none');
-  }
+        this.$select.classList.remove("d-none");
+    }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  const $elements = document.querySelectorAll('[data-bsl]') as NodeListOf<HTMLSelectElement>;
+document.addEventListener("DOMContentLoaded", function () {
+    const $elements = document.querySelectorAll("[data-bss]") as NodeListOf<HTMLSelectElement>;
 
-  if ($elements) {
-    $elements.forEach(function ($el) {
-      const BS_S = new BootstrapSelect($el);
-      $el['bs-select'] = BS_S;
-    });
-  }
+    if ($elements) {
+        $elements.forEach(function ($el) {
+            const BS_S = new BootstrapSelect($el);
+            $el["bs-select"] = BS_S;
+        });
+    }
 });

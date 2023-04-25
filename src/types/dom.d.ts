@@ -1,5 +1,5 @@
 export declare global {
-  interface HTMLSelectElement {
-    'bs-select': BootstrapSelect;
-  }
+    interface HTMLSelectElement {
+        "bs-select": BootstrapSelect;
+    }
 }
