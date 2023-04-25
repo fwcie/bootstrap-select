@@ -48,7 +48,7 @@ export const DefaultOptions: BootstrapSelectOptions = {
             // Use 'this' as current bootstrap-select instance
             return `
             <div class="px-2">
-                <input class="form-control form-control-sm bs-select-search" />
+                <input type="search" class="form-control form-control-sm bs-select-search" />
             </div>`;
         },
         dropdownMenu: function () {
@@ -69,7 +69,7 @@ export const DefaultOptions: BootstrapSelectOptions = {
         },
         item: function ($el: HTMLOptionElement) {
             // Use 'this' as current bootstrap-select instance
-            return `<span ${DATA_ATTR}-value="${$el.value}" class="badge text-bg-light d-inline-flex align-items-center me-1">
+            return `<span ${DATA_ATTR}-value="${$el.value}" class="badge text-bg-light d-inline-flex align-items-center m-1">
       ${$el.textContent ? $el.textContent.trim() : ""}
       <button onclick="void(0)" type="button" role="close" class="btn-close ms-1 bs-select-remove-item"></button></span>`;
         }, // Only for select "multiple"

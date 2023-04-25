@@ -77,7 +77,7 @@ export class BootstrapSelect {
             }
 
             this.$dropdownMenu.append(stickyTop);
-            
+
             let countGroup = 1;
 
             for (const i in this.$select.children) {
@@ -131,6 +131,7 @@ export class BootstrapSelect {
             });
 
             this.$searchInput.querySelector("input")?.addEventListener("keyup", this.search.bind(this));
+            this.$searchInput.querySelector("input")?.addEventListener("search", this.search.bind(this));
         }
 
         this._initHandleeDoneBtn();
@@ -298,7 +299,7 @@ export class BootstrapSelect {
         console.log("refresh dropdown", mutationsList);
     }
 
-    search(event: KeyboardEvent) {
+    search(event: KeyboardEvent | Event) {
         const $input = event.target as HTMLInputElement;
         const filter = $input.value || "";
         const li = this.$dropdownMenu.getElementsByTagName("li");
@@ -347,9 +348,10 @@ export class BootstrapSelect {
 
 document.addEventListener("DOMContentLoaded", function () {
     const $zl = document.createElement("select");
+    $zl.multiple = true;
     $zl.dataset.bss = "true";
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 1000; i++) {
         const $opt = document.createElement("option");
         $opt.value = i.toString();
         $opt.textContent = "Valeur : " + i.toString();

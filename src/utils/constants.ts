@@ -7,7 +7,7 @@ export const classNames = {
     MENURIGHT: "dropdown-menu-right",
     MENULEFT: "dropdown-menu-left",
     // to-do: replace with more advanced template/customization options
-    BUTTONCLASS: "btn btn-light border dropdown-toggle",
+    BUTTONCLASS: "btn btn-sm btn-light border dropdown-toggle text-wrap",
     POPOVERHEADER: "popover-header",
     OPTION: "dropdown-item",
     DONE_BUTTON: "bs-select-remove-item"
