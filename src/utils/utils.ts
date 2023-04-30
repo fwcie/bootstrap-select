@@ -84,11 +84,12 @@ export function mergeDeep<T extends object>(target: T, ...sources: T[]): T {
 
 export function readDataAttr($el: HTMLSelectElement): BootstrapSelectOptions {
     const data = $el.dataset;
-    const options: Partial<BootstrapSelectOptions> = {};
+    const options: any = {};
 
     for (const key in data) {
         if (key.startsWith(DATA_ATTR) && key !== DATA_ATTR) {
             const validKey = toCamelCase(key.replace(DATA_ATTR, "")) as keyof BootstrapSelectOptions;
+
             options[validKey] = data[key];
         }
     }

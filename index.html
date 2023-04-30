@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Bootstrap select</title>
     <link rel="stylesheet" href="./node_modules/bootstrap/dist//css/bootstrap.min.css" />
   </head>
   <body>
@@ -12,8 +12,14 @@
       <!-- This is test file instead run docs, edit this as you want -->
       <div class="container">
         <div class="row">
-          <!-- <div class="col-4">
-            <select data-bss multiple>
+          <div class="col-4">
+            <select data-bss data-testid="basic">
+              <option value="1" disabled>first</option>
+              <option value="2" selected>second</option>
+            </select>
+          </div>
+          <div class="col-4">
+            <select data-bss multiple id="multiple">
               <option value="1" disabled>first</option>
               <option value="2" selected>second</option>
               <optgroup label="First group">
@@ -31,7 +37,7 @@
                 <option value="g2">second in group</option>
               </optgroup>
             </select>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>

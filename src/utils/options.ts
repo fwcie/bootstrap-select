@@ -56,7 +56,7 @@ export const DefaultOptions: BootstrapSelectOptions = {
             return `<ul class="dropdown-menu overflow-auto"></ul>`;
         },
         stickyTop: function () {
-            return `<div class="bg-body sticky-top pb-2 shadow"></div>`;
+            return `<div class="bg-body sticky-top pb-2 shadow-sm"></div>`;
         },
         header: function () {
             // Use 'this' as current bootstrap-select instance
