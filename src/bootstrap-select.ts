@@ -1,7 +1,7 @@
 import { addClass, createElementFromString, mergeDeep, readDataAttr, removeClass, toInteger, getTextContent } from "./utils/utils";
 import { DefaultOptions } from "./utils/options";
 import type { BootstrapSelectOptions } from "./types/options";
-import { DATA_ATTR, classNames } from "./utils/constants";
+import { DATA_ATTR, EVENT_KEY, classNames } from "./utils/constants";
 
 export class BootstrapSelect {
     // HTML Element
@@ -43,6 +43,7 @@ export class BootstrapSelect {
         this._createDropdown();
         this.render();
         this._initHandler();
+        this._trigger(`initialized${EVENT_KEY}`);
     }
 
     /**
@@ -134,7 +135,7 @@ export class BootstrapSelect {
             this.$searchInput.querySelector("input")?.addEventListener("search", this.search.bind(this));
         }
 
-        this._initHandleeDoneBtn();
+        this._initHandlerDoneBtn();
 
         // Refresh dropdown when native select input has change
         if (MutationObserver) {
@@ -148,7 +149,7 @@ export class BootstrapSelect {
         }
     }
 
-    private _initHandleeDoneBtn() {
+    private _initHandlerDoneBtn() {
         if (this.options.doneButton) {
             const $doneButtons = this.$dropdown.querySelectorAll(`.${classNames.DONE_BUTTON}`);
 
@@ -184,12 +185,16 @@ export class BootstrapSelect {
     private _changed() {
         this._updateNative();
         this._updateBtnText();
-        this._initHandleeDoneBtn();
+        this._initHandlerDoneBtn();
         this._triggerNative("change");
     }
 
     private _triggerNative(evName: string) {
         this.$select.dispatchEvent(new Event(evName));
+    }
+
+    private _trigger(evName: string) {
+        this.$btnDropdown.dispatchEvent(new CustomEvent(evName, { detail: this }));
     }
 
     private _updateNative() {
@@ -266,6 +271,8 @@ export class BootstrapSelect {
     }
 
     private _updateBtnText() {
+        // TODO : multipe -> retirer/ajouter uniquement l'item voulu
+        // Simple : remplacer car peu couteu en perf
         const content = getTextContent(this.$select, this);
 
         if (content === DefaultOptions.noneSelectedText) {
@@ -278,6 +285,8 @@ export class BootstrapSelect {
     }
 
     private _setupStyle() {
+        // TODO : gérer le cas ou le dropdown est dans le bas de la page 
+        // Donc top plutot que bottom ? if bottom <= window.innerHeigt / 2 ?
         const { bottom } = this.$dropdown.getBoundingClientRect();
         this.$dropdownMenu.style.maxHeight = window.innerHeight - bottom + "px";
     }
@@ -286,9 +295,11 @@ export class BootstrapSelect {
      * Render the dropdown into DOM
      */
     render() {
+        this._trigger(`render${EVENT_KEY}`);
         this.$select.after(this.$dropdown);
         this._setupStyle();
         this.$select.classList.add("d-none");
+        this._trigger(`rendered${EVENT_KEY}`);
     }
 
     /**
@@ -297,6 +308,7 @@ export class BootstrapSelect {
      */
     refresh(mutationsList?: MutationRecord[]) {
         console.log("refresh dropdown", mutationsList);
+        this._trigger(`refreshed${EVENT_KEY}`);
     }
 
     search(event: KeyboardEvent | Event) {
@@ -338,11 +350,13 @@ export class BootstrapSelect {
     }
 
     destroy() {
+        this._trigger(`destroy${EVENT_KEY}`);
         this.$btnDropdown.remove();
         this.$dropdown.remove();
         this.$dropdownMenu.remove();
 
         this.$select.classList.remove("d-none");
+        this._trigger(`destroyed${EVENT_KEY}`);
     }
 }
 
