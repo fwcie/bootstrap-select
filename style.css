@@ -53,3 +53,11 @@
 .scrollarea {
   overflow-y: auto;
 }
+
+code:not(.hljs) {
+  border-radius: var(--bs-border-radius)!important;
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-light-rgb),var(--bs-bg-opacity))!important;
+  padding: 0.25rem!important;
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
+}
