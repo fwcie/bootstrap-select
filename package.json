@@ -6,7 +6,7 @@
   "main": "src/bootstrap-select.ts",
   "types": "src/types.d.ts",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "npx eslint src/*/**.ts",
@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.7",
-    "bootstrap": "^5.2.3"
+    "bootstrap": "^5.2.3",
+    "bootstrap-icons": "^1.10.5",
+    "highlight.js": "^11.8.0"
   }
 }

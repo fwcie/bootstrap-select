@@ -1,47 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bootstrap select</title>
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist//css/bootstrap.min.css" />
-  </head>
-  <body>
-    <div id="app" class="p-3 m-0 border-0">
-      <!-- This is test file instead run docs, edit this as you want -->
-      <div class="container">
-        <div class="row">
-          <div class="col-4">
-            <select data-bss data-testid="basic">
-              <option value="1" disabled>first</option>
-              <option value="2" selected>second</option>
-            </select>
-          </div>
-          <div class="col-4">
-            <select data-bss multiple id="multiple">
-              <option value="1" disabled>first</option>
-              <option value="2" selected>second</option>
-              <optgroup label="First group">
-                <option value="g1" selected>first in group</option>
-                <option value="g2">second in group</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="col-4">
-            <select data-bss>
-              <option value="1">first</option>
-              <option value="2">second</option>
-              <optgroup label="First group">
-                <option value="g1">first in group</option>
-                <option value="g2">second in group</option>
-              </optgroup>
-            </select>
-          </div>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bootstrap select</title>
+        <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" href="./style.css" />
+        <link rel="stylesheet" href="./node_modules/highlight.js/styles/obsidian.css" />
+    </head>
+    <body>
+        <div id="app" class="d-flex flex-nowrap">
+            <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-light h-100 position-sticky sticky-top">
+                <div class="d-flex align-items-center mb-3 mb-md-0 link-dark text-decoration-none">
+                    <span class="fs-4"><i class="bi bi-bootstrap-fill"></i> Bootstrap Select</span>
+                    <a class="ms-auto fs-4 text-dark" href="https://github.com/fwcie/bootstrap-select"><i class="bi bi-github"></i></a>
+                </div>
+                <hr />
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item my-1">
+                        <a href="#get-started" class="nav-link ps-2" aria-current="page">
+                            <i class="bi bi-clock-fill me-1"></i>
+                            Get started
+                        </a>
+                    </li>
+                    <li class="nav-item my-1">
+                        <button
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#options-collapse"
+                        >
+                            Options
+                        </button>
+                        <div class="collapse" id="options-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item my-1">
+                        <button
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#api-collapse"
+                        >
+                            API
+                        </button>
+                        <div class="collapse" id="api-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <hr />
+                    <li class="navbar-text">Examples</li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#home-collapse"
+                        >
+                            Basic
+                        </button>
+                        <div class="collapse" id="home-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a href="#basic" class="link-dark d-inline-flex text-decoration-none rounded" href="#">Standard select</a>
+                                </li>
+                                <li>
+                                    <a href="#optgroup" class="link-dark d-inline-flex text-decoration-none rounded" href="#">Optgroup select</a>
+                                </li>
+                                <li>
+                                    <a href="#multiple" class="link-dark d-inline-flex text-decoration-none rounded" href="#">Mutliple select</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#search-collapse"
+                        >
+                            Search mode
+                        </button>
+                        <div class="collapse" id="search-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#limit-collapse"
+                        >
+                            Limit the number of selections
+                        </button>
+                        <div class="collapse" id="limit-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#custom-text-collapse"
+                        >
+                            Custom button text
+                        </button>
+                        <div class="collapse" id="custom-text-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#styling-collapse"
+                        >
+                            Styling
+                        </button>
+                        <div class="collapse" id="styling-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#custom-opt-collapse"
+                        >
+                            Customize options
+                        </button>
+                        <div class="collapse" id="custom-opt-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#custom-menu-collapse"
+                        >
+                            Customize menu
+                        </button>
+                        <div class="collapse" id="custom-menu-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="my-1">
+                        <button
+                            href="#"
+                            class="btn btn-toggle d-inline-flex align-items-center rounded w-100 border-0"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#disabled-collapse"
+                        >
+                            Disabled
+                        </button>
+                        <div class="collapse" id="disabled-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a class="link-dark d-inline-flex text-decoration-none rounded" href="#">Test</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <main id="main">
+                <div id="hero" class="px-4 py-5 mb-5 text-center bg-light">
+                    <h1 class="display-5 fw-bold">Bootstrap Select</h1>
+                    <div class="col-lg-6 mx-auto">
+                        <p class="lead mb-4">
+                            Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source
+                            toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful
+                            JavaScript plugins.
+                        </p>
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Download</button>
+                        </div>
+                    </div>
+                </div>
+                <section class="container">
+                    <article class="mb-5">
+                        <h2 id="get-started">Get started</h2>
+
+                        <p>Requirements:</p>
+                        <ul class="list-group list-group-numbered mb-4">
+                            <li class="list-group-item list-group-item-secondary">Bootstrap v5.2.3+</li>
+                        </ul>
+
+                        <h5>Install Bootstrap select</h5>
+                        <p>Using npm</p>
+                        <pre><code class="hljs language-bash">npm i @fwcie/bootstrap-select</code></pre>
+                        <p>Using yarn</p>
+                        <pre><code class="hljs language-bash">yarn add @fwcie/bootstrap-select</code></pre>
+                        <p>Using pnpm</p>
+                        <pre><code class="hljs language-bash">pnpm i @fwcie/bootstrap-select</code></pre>
+                        <h3>Usage</h3>
+                        <p>Via <code class="hljs language-html">data-bss</code> attribute</p>
+
+                        <pre><code class="hljs language-html">&lt;select data-bss&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+
+                        <p>Via <code>JavaScript</code></p>
+
+                        <pre><code class="hljs language-js">const select = new BootstrapSelect(document.querySelector("#mySelect"))</code></pre>
+
+                        <h5 class="mt-5">Get <code class="hljs language-js">BootstrapSelect</code> instance</h5>
+                        <pre><code class="hljs language-js">const select = new BootstrapSelect(document.querySelector("#mySelect"))["bs-select"]</code></pre>
+                    </article>
+
+                    <hr />
+
+                    <article class="mt-5">
+                        <h2>Examples</h2>
+                        <div class="row">
+                            <h5 id="basic">Standart select boxe</h5>
+
+                            <!-- Basic select -->
+                            <div class="col-12 mb-2 shadow rounded">
+                                <div class="pt-2 mb-3">
+                                    <p>Make this:</p>
+                                    <select>
+                                        <option value="1">first</option>
+                                        <option value="2">second</option>
+                                    </select>
+                                    <p>Become this:</p>
+                                    <select data-bss data-testid="basic">
+                                        <option value="1">first</option>
+                                        <option value="2">second</option>
+                                    </select>
+                                </div>
+                                <pre><code class="hljs language-html">&lt;select data-bss&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+                            </div>
+
+                            <!-- Basic with group -->
+                            <div class="col-12 mb-4 shadow rounded p-3">
+                                <div class="pt-2 mb-3">
+                                    <h5 id="optgroup">Select boxes with optgroups</h5>
+                                    <select data-bss>
+                                        <option value="1">first</option>
+                                        <option value="2">second</option>
+                                        <optgroup label="First group">
+                                            <option value="g1">first in group</option>
+                                            <option value="g2">second in group</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <pre><code class="hljs language-html">&lt;select data-bss&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+  &lt;optgroup label="First group"&gt;
+    &lt;option value="g1"&gt;first in group&lt;/option&gt;
+    &lt;option value="g2"&gt;second in group&lt;/option&gt;
+  &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+                            </div>
+
+                            <!-- Multiple select -->
+                            <div class="col-12 mb-4 shadow rounded p-3">
+                                <div class="pt-2 mb-3">
+                                    <h5 id="multiple">Multiple select boxes</h5>
+
+                                    <p>Simple multiple select</p>
+                                    <div class="mb-3">
+                                        <select data-bss multiple id="multiple">
+                                            <option value="1" disabled>first</option>
+                                            <option value="2" selected>second</option>
+                                            <optgroup label="First group">
+                                                <option value="g1" selected>first in group</option>
+                                                <option value="g2">second in group</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                <pre><code class="hljs language-html">&lt;select multiple data-bss&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+  &lt;optgroup label="First group"&gt;
+    &lt;option value="g1"&gt;first in group&lt;/option&gt;
+    &lt;option value="g2"&gt;second in group&lt;/option&gt;
+  &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+                                    <p>Multiple select with remove button using <code>data-attribute</code></p>
+                                    <select data-bss multiple data-bss-done-button id="multiple">
+                                        <option value="1" disabled>first</option>
+                                        <option value="2" selected>second</option>
+                                        <optgroup label="First group">
+                                            <option value="g1" selected>first in group</option>
+                                            <option value="g2">second in group</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <pre><code class="hljs language-html">&lt;select multiple data-bss data-bss-done-button&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+&lt;optgroup label="First group"&gt;
+  &lt;option value="g1"&gt;first in group&lt;/option&gt;
+  &lt;option value="g2"&gt;second in group&lt;/option&gt;
+&lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+                                <p>Multiple select with remove button using <code>JavaScript</code></p>
+                                <div class="mb-3">
+
+                                    <select data-bss multiple id="multiple">
+                                        <option value="1" disabled>first</option>
+                                        <option value="2" selected>second</option>
+                                        <optgroup label="First group">
+                                            <option value="g1" selected>first in group</option>
+                                            <option value="g2">second in group</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                    
+                                <pre><code class="hljs language-html">&lt;select multiple id="doneBtn"&gt;
+  &lt;option value="1"&gt;first&lt;/option&gt;
+  &lt;option value="2"&gt;second&lt;/option&gt;
+  &lt;optgroup label="First group"&gt;
+    &lt;option value="g1"&gt;first in group&lt;/option&gt;
+    &lt;option value="g2"&gt;second in group&lt;/option&gt;
+  &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+                                <pre><code class="hljs language-js">const select = new BootstrapSelect(document.getElementById("#doneBtn", { doneButton: true })</code></pre>
+                            </div>
+                        </div>
+                        </div>
+                    </article>
+                </section>
+            </main>
         </div>
-      </div>
-    </div>
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <script type="module" src="./src/bootstrap-select.ts"></script>
-  </body>
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script type="module" src="./src/bootstrap-select.ts"></script>
+        <script type="module">
+            import hljs from "highlight.js";
+            hljs.highlightAll();
+
+            const snippets = document.getElementsByTagName("pre");
+            const numberOfSnippets = snippets.length;
+            for (let i = 0; i < numberOfSnippets; i++) {
+                const code = snippets[i].getElementsByTagName("code")[0].innerText;
+
+                snippets[i].classList.add("hljs"); // append copy button to pre tag
+
+                snippets[i].innerHTML = '<button class="hljs-copy float-end btn btn-light btn-sm m-2">Copy</button>' + snippets[i].innerHTML; // append copy button
+
+                snippets[i].getElementsByClassName("hljs-copy")[0].addEventListener("click", function () {
+                    this.innerText = "Copying..";
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(code);
+                    } else {
+                        prompt("Clipboard (Select: ⌘+a > Copy:⌘+c)", code);
+                    }
+                    this.innerText = "Copied!";
+                    const button = this;
+                    setTimeout(function () {
+                        button.innerText = "Copy";
+                    }, 1000);
+                });
+            }
+        </script>
+    </body>
 </html>

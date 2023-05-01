@@ -87,10 +87,12 @@ export function readDataAttr($el: HTMLSelectElement): BootstrapSelectOptions {
     const options: any = {};
 
     for (const key in data) {
-        if (key.startsWith(DATA_ATTR) && key !== DATA_ATTR) {
-            const validKey = toCamelCase(key.replace(DATA_ATTR, "")) as keyof BootstrapSelectOptions;
+        if (key.startsWith("bss") && key !== "bss") {
+            const validKey = toCamelCase(key.replace("bss", "")) as keyof BootstrapSelectOptions;
 
-            options[validKey] = data[key];
+            const value = data[key] === "" ? true : data[key];
+
+            options[validKey] = value;
         }
     }
 

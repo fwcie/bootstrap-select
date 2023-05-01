@@ -361,18 +361,6 @@ export class BootstrapSelect {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const $zl = document.createElement("select");
-    $zl.multiple = true;
-    $zl.dataset.bss = "true";
-
-    for (let i = 0; i < 1000; i++) {
-        const $opt = document.createElement("option");
-        $opt.value = i.toString();
-        $opt.textContent = "Valeur : " + i.toString();
-        $zl.appendChild($opt);
-    }
-
-    this.body.appendChild($zl);
     const $elements = document.querySelectorAll("[data-bss]") as NodeListOf<HTMLSelectElement>;
 
     if ($elements) {
