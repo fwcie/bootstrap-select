@@ -7,7 +7,6 @@ export interface BootstrapSelectOptions {
     local: string;
     selectAllText: string;
     deselectAllText: string;
-    doneButton: boolean;
     multipleSeparator: string;
     style: string;
     size: string;
@@ -24,12 +23,10 @@ export interface BootstrapSelectOptions {
     showTick: boolean;
     template: {
         dropdownButton: ($el: HTMLSelectElement) => string;
-        dropdown: () => string;
         dropdownMenu: () => string;
         serchInput: () => string;
         stickyTop: () => string;
         header: () => string;
-        item: ($el: HTMLOptionElement) => string;
         optgroup: ($el: HTMLOptGroupElement) => string;
         option: ($el: HTMLOptionElement, multiple: boolean) => string;
         divider: () => string;

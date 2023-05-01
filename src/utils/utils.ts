@@ -60,22 +60,23 @@ export function isObject(item: any): boolean {
 /**
  * Deep merge two objects.
  */
-export function mergeDeep<T extends object>(target: T, ...sources: T[]): T {
-    if (!sources.length) return target;
-    const source = sources.shift();
-
-    if (source && isObject(target) && isObject(source)) {
-        for (const key in source) {
+export function mergeDeep<T extends object>(target: T, source: T): T {
+    if (!source) return target;
+    const output = Object.assign({}, target);
+    if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach(key => {
             if (isObject(source[key as keyof T])) {
-                if (!target[key as keyof T]) Object.assign(target, { [key]: {} });
-                mergeDeep(target[key as keyof object], source[key as keyof object]);
+                if (!(key in target)) {
+                    Object.assign(output, { [key]: source[key as keyof T] });
+                } else {
+                    output[key as keyof object] = mergeDeep(target[key as keyof object], source[key as keyof object]);
+                }
             } else {
-                Object.assign(target, { [key]: source[key as keyof T] });
+                Object.assign(output, { [key]: source[key as keyof T] });
             }
-        }
+        });
     }
-
-    return mergeDeep(target, ...sources);
+    return output;
 }
 
 // export function addOption(_$opt: HTMLOptionElement) {}
@@ -116,32 +117,30 @@ export function getTextContent($el: HTMLSelectElement, instanceSelect: Bootstrap
                 text.push(content);
 
                 return text.join(DefaultOptions.multipleSeparator);
-            } else if (instanceSelect.options.doneButton) {
-                selected.forEach(opt => {
-                    text.push(instanceSelect.options.template.item(opt));
-                });
-
-                return text.join("");
             } else {
                 // classic display values with separator
                 selected.forEach(opt => {
-                    text.push(opt?.textContent || DefaultOptions.noneValue);
+                    text.push(opt.textContent || DefaultOptions.noneValue);
                 });
 
                 return text.join(DefaultOptions.multipleSeparator);
             }
         } else {
             selected.forEach(opt => {
-                text.push(opt?.textContent || DefaultOptions.noneValue);
+                if (opt.value === "") {
+                    text.push($el.dataset.bssTitle || DefaultOptions.noneValue);
+                } else {
+                    text.push(opt.textContent || DefaultOptions.noneValue);
+                }
             });
 
             return text.join(DefaultOptions.multipleSeparator);
         }
     } else {
         if ($el.multiple) {
-            text.push(DefaultOptions.noneSelectedText);
+            text.push($el.dataset.bssTitle || DefaultOptions.noneSelectedText);
         } else {
-            text.push(first.textContent || DefaultOptions.noneSelectedText);
+            text.push($el.title || first.textContent || DefaultOptions.noneSelectedText);
         }
 
         return text.join(DefaultOptions.multipleSeparator);

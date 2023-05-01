@@ -18,7 +18,6 @@ export const DefaultOptions: BootstrapSelectOptions = {
     local: "en",
     selectAllText: "Select All",
     deselectAllText: "Deselect All",
-    doneButton: false,
     multipleSeparator: ", ",
     style: classNames.BUTTONCLASS,
     size: "auto",
@@ -27,8 +26,8 @@ export const DefaultOptions: BootstrapSelectOptions = {
     allowClear: false,
     selectedTextFormat: "values",
     width: "auto",
-    header: "Header test",
-    search: true,
+    header: false,
+    search: false,
     searchPlaceholder: "",
     normalizeSearch: false,
     actionsBox: false,
@@ -36,14 +35,10 @@ export const DefaultOptions: BootstrapSelectOptions = {
     template: {
         dropdownButton: function ($el: HTMLSelectElement) {
             // Use 'this' as current bootstrap-select instance
-            const style = $el.getAttribute('style') !== "" ? ` style=${$el.getAttribute('style')}` : '';
+            const style = $el.getAttribute('style') ? ` style=${$el.getAttribute('style')}` : '';
             return `<button${$el.disabled ? " disabled" : ""} class="${
                 classNames.BUTTONCLASS + ' ' + $el.classList.value
             }"${style} type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="${$el.multiple ? "outside" : "true"}"></button>`;
-        },
-        dropdown: function () {
-            // Use 'this' as current bootstrap-select instance
-            return `<div class="dropdown"></div>`;
         },
         serchInput: function () {
             // Use 'this' as current bootstrap-select instance
@@ -54,7 +49,7 @@ export const DefaultOptions: BootstrapSelectOptions = {
         },
         dropdownMenu: function () {
             // Use 'this' as current bootstrap-select instance
-            return `<ul class="dropdown-menu overflow-auto"></ul>`;
+            return `<ul class="${classNames.MENU}"></ul>`;
         },
         stickyTop: function () {
             return `<div class="bg-body sticky-top pb-2 shadow-sm"></div>`;
@@ -68,15 +63,9 @@ export const DefaultOptions: BootstrapSelectOptions = {
                 </button>
             </h6>`;
         },
-        item: function ($el: HTMLOptionElement) {
-            // Use 'this' as current bootstrap-select instance
-            return `<span ${DATA_ATTR}-value="${$el.value}" class="text-bg-light d-inline-flex align-items-center m-1 fw-bold rounded p-1 small">
-            ${$el.textContent ? $el.textContent.trim() : ""}
-            <button type="button" role="close" class="btn-close ms-1 bs-select-remove-item"></button></span>`;
-        }, // Only for select "multiple"
         optgroup: function ($el: HTMLOptGroupElement) {
             // Use 'this' as current bootstrap-select instance
-            return `<li><h6 class="dropdown-header">${$el.title || "Group"}</h6></li>`;
+            return `<li><h6 class="dropdown-header">${$el.label || "Group"}</h6></li>`;
         },
         option: function ($el: HTMLOptionElement, multiple = false) {
             // Use 'this' as current bootstrap-select instance

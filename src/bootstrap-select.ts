@@ -9,7 +9,6 @@ export class BootstrapSelect {
     public $btnDropdown: HTMLButtonElement = document.createElement("button");
     public $header: HTMLLIElement = document.createElement("li");
     public $searchInput: HTMLLIElement = document.createElement("li");
-    public $dropdown: HTMLDivElement = document.createElement("div");
     public $dropdownMenu: HTMLUListElement = document.createElement("ul");
 
     public options: BootstrapSelectOptions = DefaultOptions;
@@ -17,13 +16,13 @@ export class BootstrapSelect {
     public id = "";
     public values: Array<string> = [];
 
-    constructor($element: HTMLSelectElement, options: BootstrapSelectOptions = DefaultOptions) {
+    constructor($element: HTMLSelectElement, options: Partial<BootstrapSelectOptions> = DefaultOptions) {
         // Get data option and merge into options object
         const dataOptions = readDataAttr($element);
-        options = mergeDeep<BootstrapSelectOptions>(options, dataOptions);
+        options = mergeDeep<Partial<BootstrapSelectOptions>>(options, dataOptions);
 
         this.$select = $element;
-        this.options = mergeDeep(this.options, options);
+        this.options = mergeDeep(this.options, options) as BootstrapSelectOptions; 
         this.id = this.$select.getAttribute("id") || "bs-select-" + Date.now();
 
         this.init();
@@ -32,11 +31,9 @@ export class BootstrapSelect {
     init() {
         // Bind this to all template method
         this.options.template.divider = this.options.template.divider.bind(this);
-        this.options.template.dropdown = this.options.template.dropdown.bind(this);
         this.options.template.dropdownButton = this.options.template.dropdownButton.bind(this);
         this.options.template.dropdownMenu = this.options.template.dropdownMenu.bind(this);
         this.options.template.header = this.options.template.header.bind(this);
-        this.options.template.item = this.options.template.item.bind(this);
         this.options.template.optgroup = this.options.template.optgroup.bind(this);
         this.options.template.option = this.options.template.option.bind(this);
 
@@ -50,18 +47,15 @@ export class BootstrapSelect {
      * Create html dropdown
      */
     private _createDropdown() {
-        this.$dropdown = createElementFromString<HTMLDivElement>(this.options.template.dropdown());
         this.$btnDropdown = createElementFromString<HTMLButtonElement>(this.options.template.dropdownButton(this.$select));
         this.$dropdownMenu = createElementFromString<HTMLUListElement>(this.options.template.dropdownMenu());
         
         const textContent = getTextContent(this.$select, this);
-        if (textContent === DefaultOptions.noneSelectedText) {
+        if (textContent === this.options.noneSelectedText || textContent === this.options.title) {
             addClass("text-muted", this.$btnDropdown);
         }
 
-        this.$btnDropdown.innerHTML = textContent;
-        this.$dropdown.appendChild(this.$btnDropdown);
-        this.$dropdown.appendChild(this.$dropdownMenu);
+        this.$btnDropdown.innerHTML = `<span class="position-static float-start h-100 w-100 text-start overflow-hidden">${textContent}</span>`;
 
         if (this.$select.children.length > 0) {
             const stickyTop = createElementFromString<HTMLDivElement>(this.options.template.stickyTop());
@@ -77,7 +71,9 @@ export class BootstrapSelect {
                 stickyTop.append(this.$searchInput);
             }
 
-            this.$dropdownMenu.append(stickyTop);
+            if (this.options.header || this.options.search) {
+                this.$dropdownMenu.append(stickyTop);
+            }
 
             let countGroup = 1;
 
@@ -87,6 +83,7 @@ export class BootstrapSelect {
 
                 if (child instanceof HTMLOptionElement) {
                     // addOption(child);
+                    if (!child.value && child.value === "") continue;
                     const $opt = createElementFromString<HTMLLIElement>(this.options.template.option(child, this.$select.multiple));
 
                     if (child.selected) this._setSelected($opt.querySelector("a") as HTMLAnchorElement);
@@ -108,6 +105,7 @@ export class BootstrapSelect {
                         for (const i in child.children) {
                             const opt = child.children[i];
                             if (opt instanceof HTMLOptionElement) {
+                                if (!opt.value && opt.value === "") continue;
                                 const $opt = createElementFromString<HTMLLIElement>(this.options.template.option(opt, this.$select.multiple));
                                 if (opt.selected) this._setSelected($opt.querySelector("a") as HTMLAnchorElement);
                                 $opt.classList.add(groupClass);
@@ -127,7 +125,7 @@ export class BootstrapSelect {
         });
 
         if (this.options.search) {
-            this.$dropdown.addEventListener("shown.bs.dropdown", () => {
+            this.$btnDropdown.addEventListener("shown.bs.dropdown", () => {
                 this.$searchInput.querySelector("input")?.focus();
             });
 
@@ -135,7 +133,6 @@ export class BootstrapSelect {
             this.$searchInput.querySelector("input")?.addEventListener("search", this.search.bind(this));
         }
 
-        this._initHandlerDoneBtn();
 
         // Refresh dropdown when native select input has change
         if (MutationObserver) {
@@ -146,30 +143,6 @@ export class BootstrapSelect {
 
         if (this.options.header) {
             this.$header.querySelector(".btn-close")?.addEventListener("click", this.close.bind(this));
-        }
-    }
-
-    private _initHandlerDoneBtn() {
-        if (this.options.doneButton) {
-            const $doneButtons = this.$dropdown.querySelectorAll(`.${classNames.DONE_BUTTON}`);
-
-            if ($doneButtons) {
-                $doneButtons.forEach($item => {
-                    $item.addEventListener("click", e => {
-                        // need to force close cause show called before click
-                        this.close();
-
-                        const $el = e.target ? (e.target as HTMLSpanElement) : (e.currentTarget as HTMLSpanElement);
-
-                        if ($el) {
-                            const value = $el.parentElement ? $el.parentElement.dataset.bssValue : "";
-                            const $opt = this.$dropdown.querySelector(`a[${DATA_ATTR}-value="${value}"]`) as HTMLAnchorElement;
-                            this._unsetSelected($opt, this.$select.multiple);
-                            this._changed();
-                        }
-                    });
-                });
-            }
         }
     }
 
@@ -185,7 +158,6 @@ export class BootstrapSelect {
     private _changed() {
         this._updateNative();
         this._updateBtnText();
-        this._initHandlerDoneBtn();
         this._triggerNative("change");
     }
 
@@ -238,7 +210,7 @@ export class BootstrapSelect {
                 return;
             } else {
                 // Clear last selected item
-                const $active = this.$dropdown.querySelector(".active") as HTMLAnchorElement;
+                const $active = this.$dropdownMenu.querySelector(".active") as HTMLAnchorElement;
 
                 if ($active) {
                     $active.classList.remove("active");
@@ -262,7 +234,6 @@ export class BootstrapSelect {
 
     private _unsetSelected($opt: HTMLAnchorElement, single = false) {
         $opt.removeAttribute("aria-current");
-        // $opt.classList.remove('active');
         $opt.blur();
         $opt.querySelector(".check-mark")?.classList.add("opacity-0");
         this._removeValue($opt.dataset.bssValue as string);
@@ -273,22 +244,23 @@ export class BootstrapSelect {
     private _updateBtnText() {
         // TODO : multipe -> retirer/ajouter uniquement l'item voulu
         // Simple : remplacer car peu couteu en perf
-        const content = getTextContent(this.$select, this);
+        const textContent = getTextContent(this.$select, this);
 
-        if (content === DefaultOptions.noneSelectedText) {
+        if (textContent === this.options.noneSelectedText || textContent === this.options.title) {
             addClass("text-muted", this.$btnDropdown);
         } else {
             removeClass("text-muted", this.$btnDropdown);
         }
 
-        this.$btnDropdown.innerHTML = content;
+        this.$btnDropdown.innerHTML = `<span class="position-static float-start h-100 w-100 text-start overflow-hidden">${textContent}</span>`;
     }
 
     private _setupStyle() {
         // TODO : gérer le cas ou le dropdown est dans le bas de la page 
         // Donc top plutot que bottom ? if bottom <= window.innerHeigt / 2 ?
-        const { bottom } = this.$dropdown.getBoundingClientRect();
+        const { bottom } = this.$btnDropdown.getBoundingClientRect();
         this.$dropdownMenu.style.maxHeight = window.innerHeight - bottom + "px";
+        this.$dropdownMenu.style.minWidth = this.$btnDropdown.getBoundingClientRect().width + "px";
     }
 
     /**
@@ -296,9 +268,10 @@ export class BootstrapSelect {
      */
     render() {
         this._trigger(`render${EVENT_KEY}`);
-        this.$select.after(this.$dropdown);
-        this._setupStyle();
+        this.$select.after(this.$btnDropdown);
+        this.$btnDropdown.after(this.$dropdownMenu);
         this.$select.classList.add("d-none");
+        this._setupStyle();
         this._trigger(`rendered${EVENT_KEY}`);
     }
 
@@ -352,9 +325,8 @@ export class BootstrapSelect {
     destroy() {
         this._trigger(`destroy${EVENT_KEY}`);
         this.$btnDropdown.remove();
-        this.$dropdown.remove();
         this.$dropdownMenu.remove();
-
+        delete this.$select["bs-select"];
         this.$select.classList.remove("d-none");
         this._trigger(`destroyed${EVENT_KEY}`);
     }
@@ -364,8 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const $elements = document.querySelectorAll("[data-bss]") as NodeListOf<HTMLSelectElement>;
 
     if ($elements) {
-        $elements.forEach(function ($el) {
-            const BS_S = new BootstrapSelect($el);
+        $elements.forEach(function ($el, i) {
+            const opt = i === 4 ? { search: true} : undefined;
+            const BS_S = new BootstrapSelect($el, opt);
             $el["bs-select"] = BS_S;
         });
     }
