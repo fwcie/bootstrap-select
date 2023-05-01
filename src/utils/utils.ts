@@ -127,20 +127,16 @@ export function getTextContent($el: HTMLSelectElement, instanceSelect: Bootstrap
             }
         } else {
             selected.forEach(opt => {
-                if (opt.value === "") {
-                    text.push($el.dataset.bssTitle || DefaultOptions.noneValue);
-                } else {
-                    text.push(opt.textContent || DefaultOptions.noneValue);
-                }
+                text.push(opt.textContent || DefaultOptions.noneValue);
             });
 
             return text.join(DefaultOptions.multipleSeparator);
         }
     } else {
         if ($el.multiple) {
-            text.push($el.dataset.bssTitle || DefaultOptions.noneSelectedText);
+            text.push(DefaultOptions.noneSelectedText);
         } else {
-            text.push($el.title || first.textContent || DefaultOptions.noneSelectedText);
+            text.push(first.textContent || DefaultOptions.noneSelectedText);
         }
 
         return text.join(DefaultOptions.multipleSeparator);

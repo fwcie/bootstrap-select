@@ -50,9 +50,13 @@ export class BootstrapSelect {
         this.$btnDropdown = createElementFromString<HTMLButtonElement>(this.options.template.dropdownButton(this.$select));
         this.$dropdownMenu = createElementFromString<HTMLUListElement>(this.options.template.dropdownMenu());
         
-        const textContent = getTextContent(this.$select, this);
-        if (textContent === this.options.noneSelectedText || textContent === this.options.title) {
+        let textContent = getTextContent(this.$select, this);
+        if (textContent === this.options.noneSelectedText || textContent === this.options.noneValue) {
             addClass("text-muted", this.$btnDropdown);
+        }
+
+        if (textContent === this.options.noneValue && this.options.title !== "") {
+            textContent = this.options.title;
         }
 
         this.$btnDropdown.innerHTML = `<span class="position-static float-start h-100 w-100 text-start overflow-hidden">${textContent}</span>`;
