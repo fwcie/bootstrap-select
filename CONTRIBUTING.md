@@ -8,6 +8,10 @@ the developers managing and developing this open source project. In return,
 they should reciprocate that respect in addressing your issue or assessing
 patches and features.
 
+## Requirement
+
+- nodejs v16.14.0+
+- npm v9.3.1+
 
 ## Using the issue tracker
 

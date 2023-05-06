@@ -248,12 +248,16 @@ export class BootstrapSelect {
     private _updateBtnText() {
         // TODO : multipe -> retirer/ajouter uniquement l'item voulu
         // Simple : remplacer car peu couteu en perf
-        const textContent = getTextContent(this.$select, this);
+        let textContent = getTextContent(this.$select, this);
 
         if (textContent === this.options.noneSelectedText || textContent === this.options.title) {
             addClass("text-muted", this.$btnDropdown);
         } else {
             removeClass("text-muted", this.$btnDropdown);
+        }
+
+        if (textContent === this.options.noneValue && this.options.title !== "") {
+            textContent = this.options.title;
         }
 
         this.$btnDropdown.innerHTML = `<span class="position-static float-start h-100 w-100 text-start overflow-hidden">${textContent}</span>`;

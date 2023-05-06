@@ -255,8 +255,8 @@
                         </div>
                     </div>
                 </div>
-                <h2 id="get-started">Get started</h2>
                 <section class="container">
+                    <h2 id="get-started">Get started</h2>
                     <article class="mb-5">
                         <!-- Requirements -->
                         <p>Requirements:</p>
@@ -304,6 +304,18 @@
                                 >
                                     pnpm
                                 </button>
+                                <button
+                                    class="nav-link"
+                                    id="nav-cdn-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#nav-cdn"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="nav-cdn"
+                                    aria-selected="false"
+                                >
+                                    cdn
+                                </button>
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
@@ -315,6 +327,9 @@
                             </div>
                             <div class="tab-pane" id="nav-pnpm" role="tabpanel" aria-labelledby="nav-pnpm-tab">
                                 <pre><code class="hljs language-bash">pnpm i @fwcie/bootstrap-select</code></pre>
+                            </div>
+                            <div class="tab-pane" id="nav-cdn" role="tabpanel" aria-labelledby="nav-cdn-tab">
+                                <pre><code class="hljs language-html">&lt;script src="cdn.jsdelivr.js"&gt;&lt;/script&gt;</code></pre>
                             </div>
                         </div>
 
@@ -337,7 +352,7 @@
                         <pre><code class="hljs language-js">const select = new BootstrapSelect(document.querySelector("#mySelect"))</code></pre>
 
                         <h5 class="mt-5">Get <code>BootstrapSelect</code> instance</h5>
-                        <pre><code class="hljs language-js">const select = document.querySelector("#mySelect")["bs-select"]</code></pre>
+                        <pre><code class="hljs language-js">const instance = document.querySelector("#mySelect")["bs-select"]</code></pre>
                     </article>
 
                     <hr />
