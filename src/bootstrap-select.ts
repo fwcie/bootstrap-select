@@ -1,7 +1,7 @@
 import { addClass, createElementFromString, mergeDeep, readDataAttr, removeClass, toInteger, getTextContent } from "./utils/utils";
 import { DefaultOptions } from "./utils/options";
 import type { BootstrapSelectOptions } from "./types/options";
-import { DATA_ATTR, EVENT_KEY, classNames } from "./utils/constants";
+import { EVENT_KEY, classNames } from "./utils/constants";
 
 export class BootstrapSelect {
     // HTML Element
@@ -279,6 +279,7 @@ export class BootstrapSelect {
         this.$select.after(this.$btnDropdown);
         this.$btnDropdown.after(this.$dropdownMenu);
         this.$select.classList.add("d-none");
+        this.$select["bs-select"] = this;
         this._setupStyle();
         this._trigger(`rendered${EVENT_KEY}`);
     }
@@ -346,8 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if ($elements) {
         $elements.forEach(function ($el, i) {
             const opt = i === 4 ? { search: true} : undefined;
-            const BS_S = new BootstrapSelect($el, opt);
-            $el["bs-select"] = BS_S;
+            new BootstrapSelect($el, opt);
         });
     }
 });

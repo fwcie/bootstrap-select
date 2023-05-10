@@ -1,23 +1,22 @@
 import { defineConfig } from "vite";
-// import { resolve } from "node:path";
 
 export default defineConfig({
-    // root: resolve(__dirname, "src"),
     build: {
         minify: false,
+        lib: {
+            entry: "src/bootstrap-select.ts",
+            name: "bootstrap-select.js",
+            fileName: () => "bootstrap-select.js",
+            formats: ["cjs"]
+        },
         rollupOptions: {
             output: {
                 assetFileNames: "assets/[name].[ext]",
                 chunkFileNames: "chunks/[name].js",
-                entryFileNames: "entries/[name].js"
+                entryFileNames: "js/[name].js"
             }
         }
     },
-    // resolve: {
-    //     alias: {
-    //         "~bootstrap": resolve(__dirname, "node_modules/bootstrap")
-    //     }
-    // },
     server: {
         port: 3030
     }

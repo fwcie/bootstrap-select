@@ -1,6 +1,5 @@
 import type { BootstrapSelectOptions } from "../types/options";
 import { DefaultOptions } from "./options";
-import { DATA_ATTR } from "./constants";
 import type { BootstrapSelect } from "../bootstrap-select";
 
 export function inArray(needle: unknown, haystack: unknown[]) {
