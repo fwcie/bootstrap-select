@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Bootstrap select</title>
         <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
@@ -14,7 +14,7 @@
         <div id="app" class="d-flex flex-nowrap">
             <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-light h-100 position-sticky sticky-top">
                 <div class="d-flex align-items-center mb-3 mb-md-0 link-dark text-decoration-none">
-                    <span class="fs-4"><i class="bi bi-bootstrap-fill"></i> Bootstrap Select</span>
+                    <span class="fs-4"><img width="25" src="/logo.svg" alt="Bootstrap" /> Bootstrap Select</span>
                     <a class="ms-auto fs-4 text-dark" href="https://github.com/fwcie/bootstrap-select" target="_blank"
                         ><i class="bi bi-github"></i
                     ></a>
@@ -335,17 +335,8 @@
 
                         <!--  Usage -->
                         <h3>Usage</h3>
-                        <p>
-                            You can use <code>Bootstrap Select</code> without <code>html</code> using data attribute prefixed by
-                            <code>data-bss-</code>
-                        </p>
-                        <p>Be sure option available and good writing, check it <a href="#options">here</a></p>
-                        <p>Via <code>data-bss</code> attribute</p>
 
-                        <pre><code class="hljs language-html">&lt;select data-bss data-bss-***&gt;
-  &lt;option value="1"&gt;first&lt;/option&gt;
-  &lt;option value="2"&gt;second&lt;/option&gt;
-&lt;/select&gt;</code></pre>
+                        <p>Be sure option available and good writing, check it <a href="#options">here</a></p>
 
                         <p>Via <code>JavaScript</code></p>
 
@@ -486,64 +477,77 @@
                                     <div class="input-group mb-3">
                                         <label class="input-group-text" for="inputGroupSelect01">Options</label>
                                         <select data-bss id="inputGroupSelect01">
-                                          <option selected>Choose...</option>
-                                          <option value="1">One</option>
-                                          <option value="2">Two</option>
-                                          <option value="3">Three</option>
+                                            <option selected>Choose...</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
                                         </select>
-                                      </div>
-                                      
-                                      <div class="input-group mb-3">
-                                        <select data-bss id="inputGroupSelect02">
-                                          <option selected>Choose...</option>
-                                          <option value="1">One</option>
-                                          <option value="2">Two</option>
-                                          <option value="3">Three</option>
+                                    </div>
+
+                                    <div class="input-group mb-3">
+                                        <select data-bss class="rounded-start" id="inputGroupSelect02">
+                                            <option selected>Choose...</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
                                         </select>
                                         <label class="input-group-text" for="inputGroupSelect02">Options</label>
-                                      </div>
-                                      
-                                      <div class="input-group mb-3">
+                                    </div>
+
+                                    <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary" type="button">Button</button>
                                         <select data-bss id="inputGroupSelect03" aria-label="Example select with button addon">
-                                          <option selected>Choose...</option>
-                                          <option value="1">One</option>
-                                          <option value="2">Two</option>
-                                          <option value="3">Three</option>
+                                            <option selected>Choose...</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
                                         </select>
-                                      </div>
-                                      
-                                      <div class="input-group">
-                                        <select data-bss id="inputGroupSelect04" aria-label="Example select with button addon">
-                                          <option selected>Choose...</option>
-                                          <option value="1">One</option>
-                                          <option value="2">Two</option>
-                                          <option value="3">Three</option>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <select data-bss class="rounded-start" id="inputGroupSelect04" aria-label="Example select with button addon">
+                                            <option selected>Choose...</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
                                         </select>
                                         <button class="btn btn-outline-secondary" type="button">Button</button>
-                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </article>
-
                 </section>
             </main>
         </div>
         <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-        <script type="module" src="./src/bootstrap-select.ts"></script>
         <script type="module">
+            import { BootstrapSelect } from "./src/bootstrap-select.ts";
             import hljs from "highlight.js";
+            
+            document.addEventListener("DOMContentLoaded", function () {
+                const $elements = document.querySelectorAll("[data-bss]");
+
+                if ($elements) {
+                    $elements.forEach(function ($el, i) {
+                        const opt = i === 4 ? { search: true } : undefined;
+                        new BootstrapSelect($el, opt);
+                    });
+                }
+            });
+
             hljs.highlightAll();
 
             const snippets = document.getElementsByTagName("pre");
             const numberOfSnippets = snippets.length;
+            const defaultBtnState = 'Copy <i class="bi bi-clipboard-fill ms-1"></i>';
+            const copiedBtnState = 'Copied ! <i class="bi bi-clipboard-check-fill ms-1"></i>';
             for (let i = 0; i < numberOfSnippets; i++) {
                 const code = snippets[i].getElementsByTagName("code")[0].innerText;
 
                 snippets[i].classList.add("hljs"); // append copy button to pre tag
 
-                snippets[i].innerHTML = '<button class="hljs-copy float-end btn btn-light btn-sm m-2">Copy</button>' + snippets[i].innerHTML; // append copy button
+                snippets[i].innerHTML = '<button class="hljs-copy float-end btn btn-light btn-sm m-2">' +  defaultBtnState + '</button>' + snippets[i].innerHTML; // append copy button
 
                 snippets[i].getElementsByClassName("hljs-copy")[0].addEventListener("click", function () {
                     this.innerText = "Copying..";
@@ -552,11 +556,13 @@
                     } else {
                         prompt("Clipboard (Select: ⌘+a > Copy:⌘+c)", code);
                     }
-                    this.innerText = "Copied!";
+                    this.innerHTML = copiedBtnState;
+                    this.classList.add('text-success');
                     const button = this;
                     setTimeout(function () {
-                        button.innerText = "Copy";
-                    }, 1000);
+                        button.innerHTML = defaultBtnState;
+                        button.classList.remove('text-success');
+                    }, 3000);
                 });
             }
         </script>

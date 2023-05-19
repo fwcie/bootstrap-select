@@ -340,14 +340,3 @@ export class BootstrapSelect {
         this._trigger(`destroyed${EVENT_KEY}`);
     }
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    const $elements = document.querySelectorAll("[data-bss]") as NodeListOf<HTMLSelectElement>;
-
-    if ($elements) {
-        $elements.forEach(function ($el, i) {
-            const opt = i === 4 ? { search: true} : undefined;
-            new BootstrapSelect($el, opt);
-        });
-    }
-});

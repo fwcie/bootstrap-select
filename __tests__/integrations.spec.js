@@ -4,7 +4,7 @@
 
 beforeEach(() => jest.resetModules());
 
-test("Initialize bootstrap select without JS", () => {
+test("Initialize bootstrap", () => {
     const { BootstrapSelect } = require("../dist/js/bootstrap-select");
     // Set up our document body
     document.body.innerHTML = `

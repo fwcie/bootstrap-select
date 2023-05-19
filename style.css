@@ -1,3 +1,7 @@
+:root {
+  --bs-select-bg-color: #d2f4ea!important;
+}
+
 #app {
     height: 100vh;
 }
@@ -22,7 +26,7 @@
 .btn-toggle:hover,
 .btn-toggle:focus {
   color: rgba(0, 0, 0, .85);
-  background-color: #d2f4ea;
+  background-color: var(--bs-select-bg-color);
 }
 
 .btn-toggle::before {
@@ -47,7 +51,7 @@
 }
 .btn-toggle-nav a:hover,
 .btn-toggle-nav a:focus {
-  background-color: #d2f4ea;
+  background-color: var(--bs-select-bg-color);
 }
 
 .scrollarea {
@@ -60,4 +64,8 @@ code:not(.hljs) {
   background-color: rgba(var(--bs-light-rgb),var(--bs-bg-opacity))!important;
   padding: 0.25rem!important;
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
+}
+
+.nav-link {
+  /* color: var(--bs-primary)!important; */
 }
